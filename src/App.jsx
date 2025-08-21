@@ -8,11 +8,11 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 function App() {
-    const [loading] = React.useState(false);
+ 
 
   return (
     <Router>
-         {loading && <Loader />}
+       
         <Routes>
           <Route path="/" element={<HomePage/>} />
           <Route path="/login" element={<Login/>} />
