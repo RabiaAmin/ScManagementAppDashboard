@@ -19,7 +19,7 @@ function SideBarLink({ menu, icon ,active , setActive}) {
             onClick={() => setActive(menu)}
             className={`flex h-9 items-center justify-center rounded-lg ${
               isActive
-                ? "text-secondary border border-primary  hover:bg-primary/20"
+                ? "text-primary border border-primary  hover:bg-primary/20"
                 : "text-muted-foreground"
             } transition-colors  md:h-8 md:w-8`}
           >

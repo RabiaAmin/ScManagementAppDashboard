@@ -21,6 +21,7 @@ import {
   PanelLeft,
   PencilRuler,
   User,
+  Users2,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +30,8 @@ import { toast } from "react-toastify";
 import SideBarLink from "./components/SideBarLink";
 import Dashboard from "./components/Dashboard";
 import Account from "./components/Account";
+import Invoices from "./components/Invoices";
+import Clients from "./components/Clients";
 
 function HomePage() {
   const [active, setActive] = useState("Dashboard");
@@ -70,6 +73,12 @@ function HomePage() {
             <SideBarLink
               menu="Invoices"
               icon={FolderGit}
+              active={active}
+              setActive={setActive}
+            />
+               <SideBarLink
+              menu="Clients"
+              icon={Users2}
               active={active}
               setActive={setActive}
             />
@@ -142,6 +151,18 @@ function HomePage() {
                     <FolderGit className="h-5 w-5" />
                     Invoices
                   </Link>
+                    <Link
+                    to="#"
+                    onClick={() => setActive("Clients")}
+                    className={`${
+                      active === "Clients"
+                        ? "text-stone-900"
+                        : "text-stone-600 hover:text-stone-900"
+                    } flex items-center gap-4 px-2.5`}
+                  >
+                    <Users2 className="h-5 w-5" />
+                    Clients
+                  </Link>
                 
                   <Link
                     to="#"
@@ -188,6 +209,10 @@ function HomePage() {
                   return <Dashboard />;
                 case "Account":
                   return <Account />;
+                case "Invoices":
+                  return <Invoices />;
+                case "Clients":
+                  return <Clients />;
                 default:
                   return null;
               }

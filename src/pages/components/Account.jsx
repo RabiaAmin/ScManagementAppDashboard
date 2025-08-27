@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Profile from './Profile'
 import UpdateProfile from './UpdateProfile'
 import UpdatePassword from './UpdatePassword'
+import Business from './Business'
 
 function Account() {
   const [selectedComponent , setSelectedComponent] = useState("Profile")
@@ -13,15 +14,23 @@ function Account() {
        </div>
        <div className='mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[200px_1fr]' >
         <nav className='grid gap-4 text-sm '>
-          <Link to="#"  className={selectedComponent === "Profile"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-stone-500"} onClick={()=>{setSelectedComponent("Profile")}}>
+          <Link to="#"  className={selectedComponent === "Profile"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Profile")}}>
            Profile
           </Link>
-           <Link to="#"  className={selectedComponent=== "Update Profile"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-stone-500"} onClick={()=>{setSelectedComponent("Update Profile")}}>
+           <Link to="#"  className={selectedComponent=== "Update Profile"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Update Profile")}}>
            Update Profile
           </Link>
-           <Link to="#"  className={selectedComponent=== "Update Password"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-stone-500"} onClick={()=>{setSelectedComponent("Update Password")}}>
+           <Link to="#"  className={selectedComponent=== "Update Password"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Update Password")}}>
            Update Password
           </Link>
+
+          <hr />
+
+        
+          <Link to="#"   className={selectedComponent=== "Business"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Business")}}>
+           Business
+          </Link>
+
          
         </nav>
         <div>
@@ -34,6 +43,8 @@ function Account() {
             return <UpdateProfile/>
           case "Update Password":
             return <UpdatePassword/>
+          case "Business":
+            return <Business/>
           default:
             return null; 
         }
