@@ -9,6 +9,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import { useDispatch } from 'react-redux';
 import { getUser } from './store/Slices/userSlice';
+import {getBusiness} from './store/Slices/businessSlice';
+import {getAllClients} from './store/Slices/clientSlice';
 import SpecialLoadingBtn from './pages/components/SpecialLoadingBtn';
 function App() {
  
@@ -18,6 +20,8 @@ function App() {
   useEffect(() => {
     const fetchData =  () => {
       dispatch(getUser());
+      dispatch(getBusiness());
+      dispatch(getAllClients());
      
     
       setLoading(false);
