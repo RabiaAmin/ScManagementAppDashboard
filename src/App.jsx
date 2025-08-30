@@ -12,6 +12,7 @@ import { getUser } from './store/Slices/userSlice';
 import {getBusiness} from './store/Slices/businessSlice';
 import {getAllClients} from './store/Slices/clientSlice';
 import SpecialLoadingBtn from './pages/components/SpecialLoadingBtn';
+import UpdateClient from './pages/UpdateClient';
 function App() {
  
     const dispatch = useDispatch();
@@ -42,6 +43,7 @@ function App() {
           <Route path="/login" element={<Login/>} />
           <Route path="/password/forgot" element={<ForgotPassword/>} />
           <Route path="/password/reset/:token" element={<ResetPassword/>} />
+          <Route path="/update/:id"element={<UpdateClient/>}  />
           <Route path="*"element={<NotFoundPage/>}  />
 
 
