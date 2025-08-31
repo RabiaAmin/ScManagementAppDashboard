@@ -1,9 +1,159 @@
-import React from 'react'
+
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllInvoices,
+  deleteInvoice,
+  updateInvoice,
+} from "@/store/slices/invoiceSlice";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Loader2, Eye, Pencil, Trash2 } from "lucide-react";
 
 function AllInvoices() {
+  const dispatch = useDispatch();
+  const { invoices, loading } = useSelector((state) => state.invoice);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    dispatch(getAllInvoices());
+  }, [dispatch]);
+
+  // Filter invoices by invoice number
+  const filteredInvoices = invoices.filter((invoice) =>
+    invoice.poNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this invoice?")) {
+      dispatch(deleteInvoice(id));
+    }
+  };
+
+  const handleStatusChange = (invoice, newStatus) => {
+    const updatedInvoice = { ...invoice, status: newStatus };
+    dispatch(updateInvoice(invoice._id, updatedInvoice));
+  };
+
   return (
-    <div>AllInvoices</div>
-  )
+    <div className="p-6 space-y-6">
+      {/* Top Bar */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="text-lg font-semibold">
+          Total Invoices:{" "}
+          <span className="text-primary">{filteredInvoices.length}</span>
+        </div>
+        <Input
+          placeholder="Filter by Po Number..."
+          className="w-full md:w-72"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
+      {/* Card with Table */}
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="text-xl font-bold">Invoice List</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="animate-spin h-6 w-6 text-primary" />
+            </div>
+          ) : filteredInvoices.length === 0 ? (
+            <p className="text-center text-gray-500">No invoices found.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Invoice No.</TableHead>
+                  <TableHead>Po No.</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Items</TableHead>
+                  <TableHead>Total Amount</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-center">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredInvoices.map((invoice) => (
+                  <TableRow key={invoice._id}>
+                    <TableCell>{invoice.invoiceNumber}</TableCell>
+                    <TableCell>{invoice.poNumber}</TableCell>
+
+                    <TableCell>
+                      {new Date(invoice.date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>{invoice.items.length}</TableCell>
+                    <TableCell>R{invoice.totalAmount.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <Select
+                        value={invoice.status}
+                        onValueChange={(value) =>
+                          handleStatusChange(invoice, value)
+                        }
+                      >
+                        <SelectTrigger className="w-[120px]">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pending">Pending</SelectItem>
+                          <SelectItem value="Sent">Sent</SelectItem>
+                          <SelectItem value="Paid">Paid</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="flex justify-center space-x-3">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="hover:bg-primary/10"
+                        onClick={() =>
+                          alert(`View details of ${invoice.invoiceNumber}`)
+                        }
+                      >
+                        <Eye className="w-5 h-5 text-blue-600" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="hover:bg-primary/10"
+                        onClick={() =>
+                          alert(`Edit functionality for ${invoice.invoiceNumber}`)
+                        }
+                      >
+                        <Pencil className="w-5 h-5 text-green-600" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="hover:bg-primary/10"
+                        onClick={() => handleDelete(invoice._id)}
+                      >
+                        <Trash2 className="w-5 h-5 text-red-600" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default AllInvoices
+
+

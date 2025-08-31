@@ -11,8 +11,8 @@ import { useDispatch } from 'react-redux';
 import { getUser } from './store/Slices/userSlice';
 import {getBusiness} from './store/Slices/businessSlice';
 import {getAllClients} from './store/Slices/clientSlice';
-import SpecialLoadingBtn from './pages/components/SpecialLoadingBtn';
 import UpdateClient from './pages/UpdateClient';
+import { getAllInvoices } from './store/Slices/invoiceSlice';
 function App() {
  
     const dispatch = useDispatch();
@@ -23,6 +23,7 @@ function App() {
       dispatch(getUser());
       dispatch(getBusiness());
       dispatch(getAllClients());
+      dispatch(getAllInvoices())
      
     
       setLoading(false);
@@ -32,7 +33,7 @@ function App() {
   }, [dispatch]);
 
   if (loading) return <div className='flex justify-center items-center min-h-screen w-100vw'>
-    <SpecialLoadingBtn />
+    <Loader />
   </div>;
 
   return (
