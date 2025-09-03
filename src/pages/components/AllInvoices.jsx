@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Loader2, Eye, Pencil, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 function AllInvoices() {
   const dispatch = useDispatch();
@@ -28,16 +29,22 @@ function AllInvoices() {
     dispatch(getAllInvoices());
   }, [dispatch]);
 
-  // Filter invoices by invoice number
-  const filteredInvoices = invoices.filter((invoice) =>
-    invoice.poNumber.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const sortedInvoices = [...invoices].sort(
+  (a, b) => new Date(b.date) - new Date(a.date)
+);
+
+const filteredInvoices = sortedInvoices.filter((invoice) =>
+  invoice.poNumber.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this invoice?")) {
       dispatch(deleteInvoice(id));
     }
   };
+
+
 
   const handleStatusChange = (invoice, newStatus) => {
     const updatedInvoice = { ...invoice, status: newStatus };
@@ -114,26 +121,26 @@ function AllInvoices() {
                       </Select>
                     </TableCell>
                     <TableCell className="flex justify-center space-x-3">
+                      <Link to={`/invoice/${invoice._id}`}>
+                      
                       <Button
                         size="icon"
                         variant="ghost"
                         className="hover:bg-primary/10"
-                        onClick={() =>
-                          alert(`View details of ${invoice.invoiceNumber}`)
-                        }
                       >
                         <Eye className="w-5 h-5 text-blue-600" />
                       </Button>
+                      </Link>
+                      <Link to={`/invoice/update/${invoice._id}`}>
                       <Button
                         size="icon"
                         variant="ghost"
                         className="hover:bg-primary/10"
-                        onClick={() =>
-                          alert(`Edit functionality for ${invoice.invoiceNumber}`)
-                        }
+                      
                       >
                         <Pencil className="w-5 h-5 text-green-600" />
                       </Button>
+                      </Link>
                       <Button
                         size="icon"
                         variant="ghost"

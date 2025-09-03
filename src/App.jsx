@@ -13,6 +13,8 @@ import {getBusiness} from './store/Slices/businessSlice';
 import {getAllClients} from './store/Slices/clientSlice';
 import UpdateClient from './pages/UpdateClient';
 import { getAllInvoices } from './store/Slices/invoiceSlice';
+import ViewInvoice from './pages/ViewInvoice';
+import UpdateInvoice from './pages/UpdateInvoice';
 function App() {
  
     const dispatch = useDispatch();
@@ -45,6 +47,9 @@ function App() {
           <Route path="/password/forgot" element={<ForgotPassword/>} />
           <Route path="/password/reset/:token" element={<ResetPassword/>} />
           <Route path="/update/:id"element={<UpdateClient/>}  />
+          <Route path="/invoice/:id"element={<ViewInvoice/>}  />
+          <Route path="/invoice/update/:id"element={<UpdateInvoice/>}  />
+
           <Route path="*"element={<NotFoundPage/>}  />
 
 
