@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Mail, Printer } from "lucide-react";
-
+import { toPng } from "html-to-image";
 import { toast } from "react-toastify";
 
 import { useParams } from "react-router-dom";
 import axios from "axios";
+
+import jsPDF from "jspdf";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
 
 function ViewInvoice() {
@@ -23,41 +25,44 @@ function ViewInvoice() {
     totalAmount: 0,
   });
 
-  //   // Dummy Data
-  //   const invoice = {
-  //     invoiceNumber: "INV-001",
-  //      fromBusiness: {
-  //       name: "SANIA CLOTHING CC",
-  //       vatNumber: "4103254292",
-  //       ckNumber: "2009/213423/23",
-  //       address: "86 Devis Hurley Street (Queen Street), Bassa Building, Durban, 4001, RSA",
-  //       phone: "0848817506",
-  //       telPhone: "031 032 0743",
-  //       fax: "0848817506",
-  //       email: "saniaclothing@gmail.com",
-  //     },
-  //     toclient : {
-  //     name: "Ubunye Uniforms (Pty) Ltd",
-  //     vatNumber: "4130319626",
-  //     registrationNumber: "2001/014969/07",
-  //     address:
-  //       "P.O. Box 201763, Umgeni Business Park, Durban North, 4016, South Africa",
-  //     phone: "(031) 263 1460",
-  //     fax: "(031) 263 1988",
-  //     email: "xyz@gmail.com",
-  //     telphone: "(031) 263 1460",
-  //   },
-  //     poNumber: "PO-2025-15",
-  //     date: "2025-09-03",
-  //     status: "Paid",
-  //     items: [
-  //       { quantity: 2, description: "Website Design", unitPrice: 1500, amount: 3000 },
-  //       { quantity: 1, description: "Mobile App Development", unitPrice: 2500, amount: 2500 },
-  //     ],
-  //     subTotal: 5500,
-  //     tax: 825,
-  //     totalAmount: 6325,
-  //   };
+  const printRef = useRef();
+
+const handlePdfDownload = async () => {
+  const element = printRef.current;
+  if (!element) return;
+
+  // Convert HTML to PNG
+  const imgData = await toPng(element, { cacheBust: true });
+
+  // Create A4 PDF in mm
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();   // 210mm
+  const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+
+  // Get image properties
+  const imgProps = pdf.getImageProperties(imgData);
+  const imgWidth = pageWidth; // fit full width
+  const imgHeight = (imgProps.height * pageWidth) / imgProps.width; // keep aspect ratio
+
+  // If image is taller than A4, scale to fit page height instead
+  let finalWidth = imgWidth;
+  let finalHeight = imgHeight;
+  if (imgHeight > pageHeight) {
+    finalHeight = pageHeight;
+    finalWidth = (imgProps.width * pageHeight) / imgProps.height;
+  }
+
+  // Center the image
+  const x = (pageWidth - finalWidth) / 2;
+  const y = 0;
+
+  pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
+  pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
+};
+
+
+
+
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -126,17 +131,27 @@ function ViewInvoice() {
             <h1 className="text-2xl font-bold dark:text-gray-100">
               Invoice {invoice.invoiceNumber}
             </h1>
-            <Link to={"/"}>
-              <Button>Back to Dashboard</Button>
-            </Link>
+            
+             <div className="flex gap-4">
+            <Button
+              onClick={handlePdfDownload}
+              className="flex items-center gap-2 cursor-pointer"
+            >
+              <Download className="w-4 h-4" /> Download PDF
+            </Button>
+            <Button  className="flex items-center gap-2  cursor-pointer">
+              <Mail className="w-4 h-4" /> Send Mail
+            </Button>
+           
+          </div>
           </div>
 
           {/* Invoice Content */}
-          <Card className="shadow-md p-6">
+          <Card ref={printRef} className="shadow-md p-6 h-full min-h-screen flex flex-col">
             <CardHeader>
               <CardTitle className="text-xl font-bold">TAX INVOICE</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col justify-between">
               <div className="grid grid-cols-2 mb-4 gap-2">
                 <div className="flex flex-col gap-6 mb-4">
                   <div className="border border-stone-400 p-4 rounded-2xl">
@@ -194,22 +209,37 @@ function ViewInvoice() {
                   </tr>
                 </thead>
                 <tbody>
-                  {invoice.items?.map((item, index) => (
-                    <tr key={index}>
-                      <td className="border border-gray-300 p-2 text-center">
-                        {item.quantity}
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        {item.description}
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        R{item.unitPrice ? item.unitPrice.toFixed(2) : "0.00"}
-                      </td>
-                      <td className="border border-gray-300 p-2 text-center">
-                        R{item.amount ? item.amount.toFixed(2) : "0.00"}
-                      </td>
-                    </tr>
-                  ))}
+                  {Array.from({
+                    length: Math.max(20, invoice.items?.length || 0),
+                  }).map((_, index) => {
+                    const item = invoice.items?.[index];
+                    return (
+                      <tr key={index} className="h-12">
+                        <td className="border border-gray-300 p-2 text-center">
+                          {item ? item.quantity : ""}
+                        </td>
+                        <td className="border border-gray-300 p-2">
+                          {item ? item.description : ""}
+                        </td>
+                        <td className="border border-gray-300 p-2 text-center">
+                          {item
+                            ? `R${
+                                item.unitPrice
+                                  ? item.unitPrice.toFixed(2)
+                                  : "0.00"
+                              }`
+                            : ""}
+                        </td>
+                        <td className="border border-gray-300 p-2 text-center">
+                          {item
+                            ? `R${
+                                item.amount ? item.amount.toFixed(2) : "0.00"
+                              }`
+                            : ""}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
 
@@ -217,30 +247,22 @@ function ViewInvoice() {
               <div className="flex justify-end">
                 <div className="text-right">
                   <p>
-                    <strong>Subtotal:</strong> R{(invoice.subTotal ?? 0).toFixed(2)}
+                    <strong>Subtotal:</strong> R
+                    {(invoice.subTotal ?? 0).toFixed(2)}
                   </p>
                   <p>
                     <strong>Tax:</strong> R{(invoice.tax ?? 0).toFixed(2)}
                   </p>
                   <p className="font-bold text-lg">
-                    <strong>Total:</strong> R{(invoice.totalAmount ?? 0).toFixed(2)}</p>
+                    <strong>Total:</strong> R
+                    {(invoice.totalAmount ?? 0).toFixed(2)}
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Action Buttons */}
-          <div className="flex gap-4">
-            <Button className="flex items-center gap-2">
-              <Download className="w-4 h-4" /> Download PDF
-            </Button>
-            <Button className="flex items-center gap-2">
-              <Mail className="w-4 h-4" /> Send Mail
-            </Button>
-            <Button className="flex items-center gap-2">
-              <Printer className="w-4 h-4" /> Print
-            </Button>
-          </div>
+         
         </div>
       </main>
     </div>

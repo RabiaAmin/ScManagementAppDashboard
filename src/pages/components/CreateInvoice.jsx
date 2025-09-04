@@ -35,6 +35,8 @@ function CreateInvoice() {
     setTotalAmount(sub + Number(tax || 0));
   }, [items, tax]);
 
+
+
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
     updatedItems[index][field] = value;
@@ -102,6 +104,7 @@ function CreateInvoice() {
               <Input
                 type="date"
                 value={date}
+                readOnly
                 onChange={e => setDate(e.target.value)}
                 required
                 className="w-full"
@@ -117,6 +120,7 @@ function CreateInvoice() {
                 type="text"
                 placeholder="Business ID"
                 value={fromBusiness}
+                readOnly
                 onChange={e => setFromBusiness(e.target.value)}
                 required
                 className="w-full"
