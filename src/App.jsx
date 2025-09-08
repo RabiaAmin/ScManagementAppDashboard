@@ -15,6 +15,7 @@ import UpdateClient from './pages/UpdateClient';
 import { getAllInvoices } from './store/Slices/invoiceSlice';
 import ViewInvoice from './pages/ViewInvoice';
 import UpdateInvoice from './pages/UpdateInvoice';
+import ViewStatement from './pages/ViewStatement';
 function App() {
  
     const dispatch = useDispatch();
@@ -49,6 +50,7 @@ function App() {
           <Route path="/update/:id"element={<UpdateClient/>}  />
           <Route path="/invoice/:id"element={<ViewInvoice/>}  />
           <Route path="/invoice/update/:id"element={<UpdateInvoice/>}  />
+          <Route path="/statements"element={<ViewStatement/>}  />
 
           <Route path="*"element={<NotFoundPage/>}  />
 

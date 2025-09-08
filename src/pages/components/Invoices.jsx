@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import CreateInvoice from './CreateInvoice'
 import AllInvoices from './AllInvoices'
 import { Link } from 'react-router-dom'
+import InvoiceStatements from './InvoiceStatements'
 
 function Invoices() {
   
@@ -16,6 +17,9 @@ function Invoices() {
            <Link to="#"  className={selectedComponent === "All"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("All")}}>
            All Invoice
           </Link >
+          <Link to="#"  className={selectedComponent === "Statement"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Statement")}}>
+          Invoice Statement
+          </Link>
           <Link to="#"  className={selectedComponent === "Create"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Create")}}>
            Create Invoice
           </Link>
@@ -30,6 +34,8 @@ function Invoices() {
             return <AllInvoices/>
           case "Create":
             return <CreateInvoice/>
+          case "Statement":
+            return <InvoiceStatements/>
          
           default:
             return null; 

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, Mail, Printer } from "lucide-react";
+import { Download, Mail } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "react-toastify";
 
@@ -27,42 +27,38 @@ function ViewInvoice() {
 
   const printRef = useRef();
 
-const handlePdfDownload = async () => {
-  const element = printRef.current;
-  if (!element) return;
+  const handlePdfDownload = async () => {
+    const element = printRef.current;
+    if (!element) return;
 
-  // Convert HTML to PNG
-  const imgData = await toPng(element, { cacheBust: true });
+    // Convert HTML to PNG
+    const imgData = await toPng(element, { cacheBust: true });
 
-  // Create A4 PDF in mm
-  const pdf = new jsPDF("p", "mm", "a4");
-  const pageWidth = pdf.internal.pageSize.getWidth();   // 210mm
-  const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+    // Create A4 PDF in mm
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
+    const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
 
-  // Get image properties
-  const imgProps = pdf.getImageProperties(imgData);
-  const imgWidth = pageWidth; // fit full width
-  const imgHeight = (imgProps.height * pageWidth) / imgProps.width; // keep aspect ratio
+    // Get image properties
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pageWidth; // fit full width
+    const imgHeight = (imgProps.height * pageWidth) / imgProps.width; // keep aspect ratio
 
-  // If image is taller than A4, scale to fit page height instead
-  let finalWidth = imgWidth;
-  let finalHeight = imgHeight;
-  if (imgHeight > pageHeight) {
-    finalHeight = pageHeight;
-    finalWidth = (imgProps.width * pageHeight) / imgProps.height;
-  }
+    // If image is taller than A4, scale to fit page height instead
+    let finalWidth = imgWidth;
+    let finalHeight = imgHeight;
+    if (imgHeight > pageHeight) {
+      finalHeight = pageHeight;
+      finalWidth = (imgProps.width * pageHeight) / imgProps.height;
+    }
 
-  // Center the image
-  const x = (pageWidth - finalWidth) / 2;
-  const y = 0;
+    // Center the image
+    const x = (pageWidth - finalWidth) / 2;
+    const y = 0;
 
-  pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
-  pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
-};
-
-
-
-
+    pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
+    pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
+  };
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -131,31 +127,33 @@ const handlePdfDownload = async () => {
             <h1 className="text-2xl font-bold dark:text-gray-100">
               Invoice {invoice.invoiceNumber}
             </h1>
-            
-             <div className="flex gap-4">
-            <Button
-              onClick={handlePdfDownload}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <Download className="w-4 h-4" /> Download PDF
-            </Button>
-            <Button  className="flex items-center gap-2  cursor-pointer">
-              <Mail className="w-4 h-4" /> Send Mail
-            </Button>
-           
-          </div>
+
+            <div className="flex gap-4">
+              <Button
+                onClick={handlePdfDownload}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <Download className="w-4 h-4" /> Download PDF
+              </Button>
+              <Button className="flex items-center gap-2  cursor-pointer">
+                <Mail className="w-4 h-4" /> Send Mail
+              </Button>
+            </div>
           </div>
 
           {/* Invoice Content */}
-          <Card ref={printRef} className="shadow-md p-6 h-full min-h-screen flex flex-col">
+          <Card
+            ref={printRef}
+            className="shadow-md p-8 h-full min-h-screen flex flex-col"
+          >
             <CardHeader>
-              <CardTitle className="text-xl font-bold">TAX INVOICE</CardTitle>
+              <CardTitle className="text-4xl font-bold">TAX INVOICE</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-between">
               <div className="grid grid-cols-2 mb-4 gap-2">
                 <div className="flex flex-col gap-6 mb-4">
                   <div className="border border-stone-400 p-4 rounded-2xl">
-                    <h2 className="font-bold">From:</h2>
+                    <h2 className="text-xl font-bold">From:</h2>
                     <p>{bussiness.name}</p>
                     <p>
                       VAT No: {bussiness.vatNumber} CK Number:{" "}
@@ -167,7 +165,7 @@ const handlePdfDownload = async () => {
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl">
-                    <h2 className="font-bold">To:</h2>
+                    <h2 className="text-xl font-bold">To:</h2>
                     <p>{client.name}</p>
                     <p>VAT No: {client.vatNumber}</p>
                     <p>Reg No: {client.registrationNumber}</p>
@@ -180,18 +178,18 @@ const handlePdfDownload = async () => {
 
                 <div className="mb-4">
                   <div className="border border-stone-400 p-4 rounded-2xl mb-4">
-                    <p>
+                    <p className="text-lg">
                       <strong>Invoice No:</strong> {invoice.invoiceNumber}
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl mb-4">
-                    <p>
+                    <p className="text-lg">
                       <strong>Date:</strong>{" "}
                       {new Date(invoice.date).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl">
-                    <p>
+                    <p className="text-lg">
                       <strong>PO Number:</strong> {invoice.poNumber}
                     </p>
                   </div>
@@ -200,12 +198,12 @@ const handlePdfDownload = async () => {
 
               {/* Items Table */}
               <table className="w-full border-collapse border border-gray-300 mb-6">
-                <thead className="bg-gray-100">
+                <thead className="bg-gray-200 text-lg">
                   <tr>
-                    <th className="border border-gray-300 p-2">Qty</th>
-                    <th className="border border-gray-300 p-2">Description</th>
-                    <th className="border border-gray-300 p-2">Unit Price</th>
-                    <th className="border border-gray-300 p-2">Amount</th>
+                    <th className="border border-gray-300 p-4">Qty</th>
+                    <th className="border border-gray-300 p-4">Description</th>
+                    <th className="border border-gray-300 p-4">Unit Price</th>
+                    <th className="border border-gray-300 p-4">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,13 +213,13 @@ const handlePdfDownload = async () => {
                     const item = invoice.items?.[index];
                     return (
                       <tr key={index} className="h-12">
-                        <td className="border border-gray-300 p-2 text-center">
+                        <td className="border text-xl border-gray-300 p-4 text-center">
                           {item ? item.quantity : ""}
                         </td>
-                        <td className="border border-gray-300 p-2">
+                        <td className="border text-xl border-gray-300 p-4">
                           {item ? item.description : ""}
                         </td>
-                        <td className="border border-gray-300 p-2 text-center">
+                        <td className="border text-xl border-gray-300 p-4 text-center">
                           {item
                             ? `R${
                                 item.unitPrice
@@ -230,7 +228,7 @@ const handlePdfDownload = async () => {
                               }`
                             : ""}
                         </td>
-                        <td className="border border-gray-300 p-2 text-center">
+                        <td className="border text-xl border-gray-300 p-4 text-center">
                           {item
                             ? `R${
                                 item.amount ? item.amount.toFixed(2) : "0.00"
@@ -241,28 +239,46 @@ const handlePdfDownload = async () => {
                     );
                   })}
                 </tbody>
-              </table>
 
-              {/* Totals */}
-              <div className="flex justify-end">
-                <div className="text-right">
-                  <p>
-                    <strong>Subtotal:</strong> R
-                    {(invoice.subTotal ?? 0).toFixed(2)}
-                  </p>
-                  <p>
-                    <strong>Tax:</strong> R{(invoice.tax ?? 0).toFixed(2)}
-                  </p>
-                  <p className="font-bold text-lg">
-                    <strong>Total:</strong> R
-                    {(invoice.totalAmount ?? 0).toFixed(2)}
-                  </p>
-                </div>
-              </div>
+                {/* Totals Section */}
+                <tfoot>
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="border text-xl border-gray-300 p-4 text-right font-bold"
+                    >
+                      Subtotal
+                    </td>
+                    <td className="border text-xl border-gray-300 p-4 text-center">
+                      R{(invoice.subTotal ?? 0).toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="border  text-xl border-gray-300 p-4 text-right font-bold"
+                    >
+                      Tax
+                    </td>
+                    <td className="border  text-xl border-gray-300 p-4 text-center">
+                      R{(invoice.tax ?? 0).toFixed(2)}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-100  font-bold text-xl">
+                    <td
+                      colSpan={3}
+                      className="border font-bold  border-gray-300 p-4 text-right"
+                    >
+                      Total Amount
+                    </td>
+                    <td className="border border-gray-300 p-4 text-center">
+                      R{(invoice.totalAmount ?? 0).toFixed(2)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
             </CardContent>
           </Card>
-
-         
         </div>
       </main>
     </div>
