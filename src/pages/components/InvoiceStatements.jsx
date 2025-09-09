@@ -2,36 +2,45 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Input } from "@/components/ui/input";
+import SpecialLoadingBtn from "../components/SpecialLoadingBtn"
+import { Button } from "@/components/ui/button";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
+
 function InvoiceStatements() {
   const [statements, setStatements] = useState([]);
   const [loading, setLoading] = useState(true);
- 
-  const getWeekRange = () => {
+  const [startDate , setStartDate] = useState("");
+  const [endDate,setEndDate] = useState("");
+  const [isSearch, setIsSearch] = useState(true);
+  
+
+  useEffect(() => {
     const now = new Date();
 
-    // Move to last week
     const lastWeek = new Date(now);
     lastWeek.setDate(now.getDate() - 7);
 
-    const dayOfWeek = lastWeek.getDay(); // 0 = Sunday
+    const dayOfWeek = lastWeek.getDay(); 
     const first = new Date(lastWeek);
-    first.setDate(lastWeek.getDate() - dayOfWeek); // Sunday of last week
+    first.setDate(lastWeek.getDate() - dayOfWeek); 
     const last = new Date(first);
-    last.setDate(first.getDate() + 6); // Saturday of last week
+    last.setDate(first.getDate() + 6); 
 
-    const startDate = first.toISOString().split("T")[0]; // YYYY-MM-DD
-    const endDate = last.toISOString().split("T")[0]; // YYYY-MM-DD
+    const startDate = first.toISOString().split("T")[0]; 
+    const endDate = last.toISOString().split("T")[0]; 
+ 
+    setStartDate(startDate);
+    setEndDate(endDate);
 
-    return { startDate, endDate };
-  };
+    fetchStatements(startDate,endDate);
+  }, []);
 
-  useEffect(() => {
-    const fetchStatements = async () => {
+   const fetchStatements = async (start,end) => {
       try {
-        const { startDate, endDate } = getWeekRange();
+       
         const res = await axios.get(
-          `${BASE_URL}/weekly-statements?startDate=${startDate}&endDate=${endDate}&_=${new Date().getTime()}`,
+          `${BASE_URL}/weekly-statements?startDate=${start}&endDate=${end}&_=${new Date().getTime()}`,
           { withCredentials: true }
         );
         const data = res.data.statements;
@@ -43,17 +52,43 @@ function InvoiceStatements() {
         );
       } finally {
         setLoading(false);
+        setIsSearch(true);
       }
     };
 
-    fetchStatements();
-  }, []);
+ 
 
+ 
   if (loading)
     return <p className="text-center">Loading weekly statements...</p>;
 
   return (
     <div className="p-6">
+      <div className="flex items-end gap-2 my-4 justify-end">
+        <div>
+            <label className="text-stone-400">Start Date</label>
+           <Input type="date" value={startDate} onChange={(e)=>{setStartDate(e.target.value); setIsSearch(false) }}  />
+        </div>
+        <div>
+            <label className="text-stone-400">End Date</label>
+
+           <Input type="date" value={endDate} onChange={(e)=>setEndDate(e.target.value)} />
+        </div>
+        <div>
+
+         {
+         loading ? <SpecialLoadingBtn/> :
+        <Button  disabled={isSearch}   onClick={()=>{fetchStatements(startDate,endDate);setLoading(true)}} >
+         Search 
+       </Button>
+         } 
+
+        </div>
+
+       
+       
+
+      </div>
       <h2 className="text-2xl font-bold mb-4">Weekly Invoice Statements</h2>
       {statements.length === 0 ? (
         <p>No invoices found for this week.</p>
