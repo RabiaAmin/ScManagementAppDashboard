@@ -26,6 +26,9 @@ export const useInvoices = (invoices) => {
       .filter((inv) => inv.status !== "Paid")
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    return { currentMonthInvoices, totalRevenue, outstandingRevenue, upcomingDueDates };
+    const totalInvoicesOfThisMonth = currentMonthInvoices.length;  
+   
+
+    return { currentMonthInvoices, totalRevenue, outstandingRevenue, upcomingDueDates ,totalInvoicesOfThisMonth};
   }, [invoices]);
 };

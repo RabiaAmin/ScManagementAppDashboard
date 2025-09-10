@@ -18,7 +18,7 @@ function Dashboard() {
   const { invoices } = useSelector((state) => state.invoice);
 
   // Use custom hook to get all calculated values
-  const { totalRevenue, outstandingRevenue, upcomingDueDates } = useInvoices(invoices);
+  const { totalRevenue, outstandingRevenue, upcomingDueDates ,totalInvoicesOfThisMonth } = useInvoices(invoices);
 
   return (
     <div className="flex flex-col p-2">
@@ -78,6 +78,13 @@ function Dashboard() {
               <CardHeader>
                 <CardTitle className="text-stone-500">Outstanding Revenue of This Month</CardTitle>
                 <CardTitle className="text-4xl">R {outstandingRevenue}</CardTitle>
+              </CardHeader>
+            </Card>
+
+                <Card className="flex flex-col justify-center">
+              <CardHeader>
+                <CardTitle className="text-stone-500">Total Invoices of This Month</CardTitle>
+                <CardTitle className="text-4xl">R {totalInvoicesOfThisMonth}</CardTitle>
               </CardHeader>
             </Card>
 
