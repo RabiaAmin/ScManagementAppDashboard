@@ -8,27 +8,38 @@ export const useInvoices = (invoices) => {
     const currentYear = now.getFullYear();
 
     // Filter invoices for current month
-    const currentMonthInvoices = invoices?.filter((inv) => {
-      const invDate = new Date(inv.date);
-      return invDate.getMonth() === currentMonth && invDate.getFullYear() === currentYear;
-    }) || [];
+    const currentMonthInvoices =
+      invoices?.filter((inv) => {
+        const invDate = new Date(inv.date);
+        return invDate.getMonth() === currentMonth && invDate.getFullYear() === currentYear;
+      }) || [];
 
-    // Calculate total revenue
-    const totalRevenue = currentMonthInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+    // Calculate total revenue (rounded to 2 decimals)
+    const totalRevenue = Number(
+      currentMonthInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0).toFixed(2)
+    );
 
-    // Calculate outstanding revenue (not Paid)
-    const outstandingRevenue = currentMonthInvoices
-      .filter((inv) => inv.status !== "Paid")
-      .reduce((sum, inv) => sum + inv.totalAmount, 0);
+    // Calculate outstanding revenue (rounded to 2 decimals)
+    const outstandingRevenue = Number(
+      currentMonthInvoices
+        .filter((inv) => inv.status !== "Paid")
+        .reduce((sum, inv) => sum + inv.totalAmount, 0)
+        .toFixed(2)
+    );
 
     // Upcoming due dates (unpaid, sorted)
     const upcomingDueDates = currentMonthInvoices
       .filter((inv) => inv.status !== "Paid")
       .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    const totalInvoicesOfThisMonth = currentMonthInvoices.length;  
-   
+    const totalInvoicesOfThisMonth = currentMonthInvoices.length;
 
-    return { currentMonthInvoices, totalRevenue, outstandingRevenue, upcomingDueDates ,totalInvoicesOfThisMonth};
+    return {
+      currentMonthInvoices,
+      totalRevenue,
+      outstandingRevenue,
+      upcomingDueDates,
+      totalInvoicesOfThisMonth,
+    };
   }, [invoices]);
 };

@@ -44,7 +44,7 @@ function InvoiceStatements() {
           { withCredentials: true }
         );
         const data = res.data.statements;
-
+        console.log(data);
         setStatements(data);
       } catch (err) {
         toast.error(

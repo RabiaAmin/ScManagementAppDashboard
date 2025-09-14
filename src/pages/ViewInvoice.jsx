@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Mail } from "lucide-react";
 import { toPng } from "html-to-image";
 import { toast } from "react-toastify";
+import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
 
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -24,10 +25,12 @@ function ViewInvoice() {
     tax: 0,
     totalAmount: 0,
   });
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const printRef = useRef();
 
   const handlePdfDownload = async () => {
+    setIsDownloading(true);
     const element = printRef.current;
     if (!element) return;
 
@@ -58,6 +61,7 @@ function ViewInvoice() {
 
     pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
     pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
+    setIsDownloading(false);
   };
 
   useEffect(() => {
@@ -70,7 +74,7 @@ function ViewInvoice() {
         setInvoice(inv);
         setBusinessId(inv.fromBusiness);
         setClientId(inv.toClient);
-        setInvoice(inv);
+       
       } catch (err) {
         toast.error(
           err.response?.data?.message || "Failed to fetch invoice data"
@@ -129,15 +133,16 @@ function ViewInvoice() {
             </h1>
 
             <div className="flex gap-4">
+              {isDownloading ? <SpecialLoadingBtn/> :
+              
               <Button
                 onClick={handlePdfDownload}
                 className="flex items-center gap-2 cursor-pointer"
               >
                 <Download className="w-4 h-4" /> Download PDF
               </Button>
-              <Button className="flex items-center gap-2  cursor-pointer">
-                <Mail className="w-4 h-4" /> Send Mail
-              </Button>
+              }
+              
             </div>
           </div>
 
@@ -147,13 +152,13 @@ function ViewInvoice() {
             className="shadow-md p-8 h-full min-h-screen flex flex-col"
           >
             <CardHeader>
-              <CardTitle className="text-4xl font-bold">TAX INVOICE</CardTitle>
+              <CardTitle className="text-6xl font-bold">TAX INVOICE</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-between">
               <div className="grid grid-cols-2 mb-4 gap-2">
                 <div className="flex flex-col gap-6 mb-4">
-                  <div className="border border-stone-400 p-4 rounded-2xl">
-                    <h2 className="text-xl font-bold">From:</h2>
+                  <div className="border border-stone-400 p-4 rounded-2xl text-xl">
+                    <h2 className="text-2xl font-bold">From:</h2>
                     <p>{bussiness.name}</p>
                     <p>
                       VAT No: {bussiness.vatNumber} CK Number:{" "}
@@ -164,8 +169,8 @@ function ViewInvoice() {
                       cell: {bussiness.phone} Tel: {bussiness.telPhone}
                     </p>
                   </div>
-                  <div className="border border-stone-400 p-4 rounded-2xl">
-                    <h2 className="text-xl font-bold">To:</h2>
+                  <div className="border border-stone-400 p-4 rounded-2xl text-xl">
+                    <h2 className="text-2xl font-bold ">To:</h2>
                     <p>{client.name}</p>
                     <p>VAT No: {client.vatNumber}</p>
                     <p>Reg No: {client.registrationNumber}</p>
@@ -177,19 +182,19 @@ function ViewInvoice() {
                 </div>
 
                 <div className="mb-4">
-                  <div className="border border-stone-400 p-4 rounded-2xl mb-4">
-                    <p className="text-lg">
+                  <div className="border border-stone-400 p-4 rounded-2xl mb-4 ">
+                    <p className="text-xl">
                       <strong>Invoice No:</strong> {invoice.invoiceNumber}
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl mb-4">
-                    <p className="text-lg">
+                    <p className="text-xl">
                       <strong>Date:</strong>{" "}
                       {new Date(invoice.date).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl">
-                    <p className="text-lg">
+                    <p className="text-xl">
                       <strong>PO Number:</strong> {invoice.poNumber}
                     </p>
                   </div>
@@ -198,7 +203,7 @@ function ViewInvoice() {
 
               {/* Items Table */}
               <table className="w-full border-collapse border border-gray-300 mb-6">
-                <thead className="bg-gray-200 text-lg">
+                <thead className="bg-gray-200 text-xl">
                   <tr>
                     <th className="border border-gray-300 p-4">Qty</th>
                     <th className="border border-gray-300 p-4">Description</th>
@@ -206,7 +211,7 @@ function ViewInvoice() {
                     <th className="border border-gray-300 p-4">Amount</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-xl">
                   {Array.from({
                     length: Math.max(20, invoice.items?.length || 0),
                   }).map((_, index) => {
@@ -241,7 +246,7 @@ function ViewInvoice() {
                 </tbody>
 
                 {/* Totals Section */}
-                <tfoot>
+                <tfoot className="text-xl">
                   <tr>
                     <td
                       colSpan={3}

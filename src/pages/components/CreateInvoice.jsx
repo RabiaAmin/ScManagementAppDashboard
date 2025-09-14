@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
-import SpecialLoadingBtn from "./specialLoadingBtn";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -32,7 +32,9 @@ function CreateInvoice() {
   useEffect(() => {
     const sub = items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
     setSubTotal(sub);
-    setTotalAmount(sub + Number(tax || 0));
+    const calculatedTax =  sub*0.15;
+    setTax(calculatedTax); 
+    setTotalAmount(sub + calculatedTax);
   }, [items, tax]);
 
 
@@ -66,7 +68,6 @@ function CreateInvoice() {
       dispatch(getAllInvoices());
       setPoNumber("");
       setDate(new Date().toISOString().slice(0, 10));
-      setFromBusiness("");
       setToClient("");
       setItems([{ quantity: 1, description: "", unitPrice: 0, amount: 0 }]);
       setSubTotal(0);
@@ -208,8 +209,8 @@ function CreateInvoice() {
             </div>
 
             <div>
-              <Label>Tax</Label>
-              <Input type="number" value={tax} onChange={e => setTax(Number(e.target.value))} className="w-full" />
+              <Label>15% Tax</Label>
+              <Input type="number" value={tax} readOnly className="w-full" />
             </div>
 
             <div>

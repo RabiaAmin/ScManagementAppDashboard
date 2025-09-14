@@ -4,7 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "react-toastify";
 import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import Loader from "../components/Loader";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateInvoice,
@@ -14,51 +21,99 @@ import {
   getAllInvoices,
 } from "@/store/Slices/invoiceSlice";
 import { useParams } from "react-router-dom";
+
 function UpdateInvoice() {
   const dispatch = useDispatch();
-  const {id} = useParams();
-  const { loading, error, message, isUpdated , invoice} = useSelector(state => state.invoice);
-  const { business } = useSelector(state => state.business);
-  const { clients } = useSelector(state => state.client);
+  const { id } = useParams();
+  const { loading, error, message, isUpdated, invoice } = useSelector(
+    (state) => state.invoice
+  );
+  const { business } = useSelector((state) => state.business);
+  const { clients } = useSelector((state) => state.client);
 
-  const [poNumber, setPoNumber] = useState(invoice?.poNumber || "");
-  const [date, setDate] = useState(invoice?.date ? new Date(invoice.date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
-  const [fromBusiness, setFromBusiness] = useState(invoice?.fromBusiness || business?._id || "");
-  const [toClient, setToClient] = useState(invoice?.toClient || "");
-  const [items, setItems] = useState(invoice?.items || [{ quantity: 1, description: "", unitPrice: 0, amount: 0 }]);
-  const [subTotal, setSubTotal] = useState(invoice?.subTotal || 0);
-  const [tax, setTax] = useState(invoice?.tax || 0);
-  const [totalAmount, setTotalAmount] = useState( invoice?.totalAmount || 0);
-  const [status, setStatus] = useState(invoice?.status || "Pending");
+  // Local state
+  const [poNumber, setPoNumber] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [fromBusiness, setFromBusiness] = useState("");
+  const [toClient, setToClient] = useState("");
+  const [items, setItems] = useState([
+    { quantity: 1, description: "", unitPrice: 0, amount: 0 },
+  ]);
+  const [subTotal, setSubTotal] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [status, setStatus] = useState("Pending");
+
 
   useEffect(() => {
-    const sub = items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
+    if (invoice) {
+      setPoNumber(invoice.poNumber || "");
+      setDate(
+        invoice.date
+          ? new Date(invoice.date).toISOString().slice(0, 10)
+          : new Date().toISOString().slice(0, 10)
+      );
+      setFromBusiness(invoice.fromBusiness || business?._id || "");
+      setToClient(invoice.toClient || "");
+      setItems(
+        invoice.items?.length
+          ? invoice.items
+          : [{ quantity: 1, description: "", unitPrice: 0, amount: 0 }]
+      );
+      setSubTotal(invoice.subTotal || 0);
+      setTax(invoice.tax || 0);
+      setTotalAmount(invoice.totalAmount || 0);
+      setStatus(invoice.status || "Pending");
+    }
+  }, [invoice, business]);
+
+  // Recalculate totals when items or tax change
+  useEffect(() => {
+    const sub = items.reduce(
+      (acc, item) => acc + item.quantity * item.unitPrice,
+      0
+    );
     setSubTotal(sub);
     setTotalAmount(sub + Number(tax || 0));
   }, [items, tax]);
 
+const handleItemChange = (index, field, value) => {
+  const updatedItems = [...items];
+  updatedItems[index] = { ...updatedItems[index], [field]: value };
 
+  if (field === "quantity" || field === "unitPrice") {
+    updatedItems[index].amount =
+      updatedItems[index].quantity * updatedItems[index].unitPrice;
+  }
 
-  const handleItemChange = (index, field, value) => {
-    const updatedItems = [...items];
-    updatedItems[index][field] = value;
-    if (field === "quantity" || field === "unitPrice") {
-      updatedItems[index].amount = updatedItems[index].quantity * updatedItems[index].unitPrice;
-    }
-    setItems(updatedItems);
-  };
+  setItems(updatedItems);
+};
 
-  const addItem = () => setItems([...items, { quantity: 1, description: "", unitPrice: 0, amount: 0 }]);
-  const removeItem = index => setItems(items.filter((_, i) => i !== index));
+  const addItem = () =>
+    setItems([
+      ...items,
+      { quantity: 1, description: "", unitPrice: 0, amount: 0 },
+    ]);
 
-  const handleSubmit = e => {
+  const removeItem = (index) => setItems(items.filter((_, i) => i !== index));
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const invoiceData = { poNumber, date, fromBusiness, toClient, items, subTotal, tax, totalAmount, status };
+    const invoiceData = {
+      poNumber,
+      date,
+      fromBusiness,
+      toClient,
+      items,
+      subTotal,
+      tax,
+      totalAmount,
+      status,
+    };
     dispatch(updateInvoice(id, invoiceData));
   };
 
   useEffect(() => {
-    
     dispatch(getInvoice(id));
 
     if (error) {
@@ -69,19 +124,24 @@ function UpdateInvoice() {
       toast.success(message);
       dispatch(resetInvoice());
       dispatch(getAllInvoices());
-
     }
-  }, [error, isUpdated, message, dispatch]);
+  }, [error, isUpdated, message, dispatch, id]);
+
+  if (loading || !invoice) {
+    return <Loader />;
+  }
 
   return (
     <div className="w-full h-[100vh] p-4 sm:p-6 md:p-8">
       <div className="grid gap-6 max-w-5xl mx-auto">
         <div className="grid gap-2">
           <h1 className="text-2xl sm:text-3xl font-bold">Update Invoice</h1>
-          <p className="text-muted-foreground">Fill in the invoice details below.</p>
+          <p className="text-muted-foreground">
+            Fill in the invoice details below.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className=" grid gap-6">
+        <form onSubmit={handleSubmit} className="grid gap-6">
           {/* PO Number & Date */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="w-full">
@@ -90,7 +150,7 @@ function UpdateInvoice() {
                 type="text"
                 placeholder="eg: po57886"
                 value={poNumber}
-                onChange={e => setPoNumber(e.target.value)}
+                onChange={(e) => setPoNumber(e.target.value)}
                 required
                 className="w-full"
               />
@@ -102,7 +162,7 @@ function UpdateInvoice() {
                 type="date"
                 value={date}
                 readOnly
-                onChange={e => setDate(e.target.value)}
+                onChange={(e) => setDate(e.target.value)}
                 required
                 className="w-full"
               />
@@ -118,7 +178,7 @@ function UpdateInvoice() {
                 placeholder="Business ID"
                 value={fromBusiness}
                 readOnly
-                onChange={e => setFromBusiness(e.target.value)}
+                onChange={(e) => setFromBusiness(e.target.value)}
                 required
                 className="w-full"
               />
@@ -126,12 +186,15 @@ function UpdateInvoice() {
 
             <div className="w-full">
               <Label>To Client</Label>
-              <Select value={toClient} onValueChange={val => setToClient(val)}>
+              <Select
+                value={toClient}
+                onValueChange={(val) => setToClient(val)}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a client" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map(client => (
+                  {clients.map((client) => (
                     <SelectItem key={client._id} value={client._id}>
                       {client.name}
                     </SelectItem>
@@ -152,7 +215,13 @@ function UpdateInvoice() {
                     type="number"
                     placeholder="Qty"
                     value={item.quantity}
-                    onChange={e => handleItemChange(index, "quantity", Number(e.target.value))}
+                    onChange={(e) =>
+                      handleItemChange(
+                        index,
+                        "quantity",
+                        Number(e.target.value)
+                      )
+                    }
                     className="w-full"
                   />
                 </div>
@@ -163,7 +232,9 @@ function UpdateInvoice() {
                     type="text"
                     placeholder="Description"
                     value={item.description}
-                    onChange={e => handleItemChange(index, "description", e.target.value)}
+                    onChange={(e) =>
+                      handleItemChange(index, "description", e.target.value)
+                    }
                     className="w-full"
                   />
                 </div>
@@ -174,25 +245,45 @@ function UpdateInvoice() {
                     type="number"
                     placeholder="Unit Price"
                     value={item.unitPrice}
-                    onChange={e => handleItemChange(index, "unitPrice", Number(e.target.value))}
+                    onChange={(e) =>
+                      handleItemChange(
+                        index,
+                        "unitPrice",
+                        Number(e.target.value)
+                      )
+                    }
                     className="w-full"
                   />
                 </div>
 
                 <div className="flex-1 min-w-[120px]">
                   <Label className="text-stone-400">Amount</Label>
-                  <Input type="number" value={item.amount} readOnly className="w-full" />
+                  <Input
+                    type="number"
+                    value={item.amount}
+                    readOnly
+                    className="w-full"
+                  />
                 </div>
 
                 <div className="flex justify-end items-end min-w-[100px]">
-                  <Button type="button" variant="destructive" onClick={() => removeItem(index)}>
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => removeItem(index)}
+                  >
                     Remove
                   </Button>
                 </div>
               </div>
             ))}
 
-            <Button type="button" variant="secondary" className="cursor-pointer w-full sm:w-auto" onClick={addItem}>
+            <Button
+              type="button"
+              variant="secondary"
+              className="cursor-pointer w-full sm:w-auto"
+              onClick={addItem}
+            >
               + Add Item
             </Button>
           </div>
@@ -201,22 +292,41 @@ function UpdateInvoice() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label>Subtotal</Label>
-              <Input type="number" value={subTotal} readOnly className="w-full" />
+              <Input
+                type="number"
+                value={subTotal}
+                readOnly
+                className="w-full"
+              />
             </div>
 
             <div>
               <Label>Tax</Label>
-              <Input type="number" value={tax} onChange={e => setTax(Number(e.target.value))} className="w-full" />
+              <Input
+                type="number"
+                value={tax}
+                onChange={(e) => setTax(Number(e.target.value))}
+                className="w-full"
+              />
             </div>
 
             <div>
               <Label>Total Amount</Label>
-              <Input type="number" value={totalAmount} readOnly className="w-full" />
+              <Input
+                type="number"
+                value={totalAmount}
+                readOnly
+                className="w-full"
+              />
             </div>
 
             <div>
               <Label>Status</Label>
-              <select className="border p-2 rounded-md w-full" value={status} onChange={e => setStatus(e.target.value)}>
+              <select
+                className="border p-2 rounded-md w-full"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 <option value="Pending">Pending</option>
                 <option value="Sent">Sent</option>
                 <option value="Paid">Paid</option>

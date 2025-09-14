@@ -7,16 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Mail } from "lucide-react";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
-
+import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
 
 function ViewStatement() {
   const { state: invoice } = useLocation();
-  
-
-
-      const [bussiness, setBusiness] = useState({});
-
-    useEffect(() => {
+  const [bussiness, setBusiness] = useState({});
+  const [isDownloading, setIsDownloading] = useState(false);
+  useEffect(() => {
     const fetchBusiness = async () => {
       try {
         const res = await axios.get(
@@ -30,49 +27,49 @@ function ViewStatement() {
         );
       }
     };
-  
-      fetchBusiness();
-    
+
+    fetchBusiness();
   }, []);
 
-    const printRef = useRef();
-  
-    const handlePdfDownload = async () => {
-      const element = printRef.current;
-      if (!element) return;
-  
-      // Convert HTML to PNG
-      const imgData = await toPng(element, { cacheBust: true });
-  
-      // Create A4 PDF in mm
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
-      const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
-  
-      // Get image properties
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgWidth = pageWidth; // fit full width
-      const imgHeight = (imgProps.height * pageWidth) / imgProps.width; // keep aspect ratio
-  
-      // If image is taller than A4, scale to fit page height instead
-      let finalWidth = imgWidth;
-      let finalHeight = imgHeight;
-      if (imgHeight > pageHeight) {
-        finalHeight = pageHeight;
-        finalWidth = (imgProps.width * pageHeight) / imgProps.height;
-      }
-  
-      // Center the image
-      const x = (pageWidth - finalWidth) / 2;
-      const y = 0;
-  
-      pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
-      pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
-    };
+  const printRef = useRef();
 
+  const handlePdfDownload = async () => {
+    setIsDownloading(true);
+    const element = printRef.current;
+    if (!element) return;
+
+    // Convert HTML to PNG
+    const imgData = await toPng(element, { cacheBust: true });
+
+    // Create A4 PDF in mm
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth(); // 210mm
+    const pageHeight = pdf.internal.pageSize.getHeight(); // 297mm
+
+    // Get image properties
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pageWidth; // fit full width
+    const imgHeight = (imgProps.height * pageWidth) / imgProps.width; // keep aspect ratio
+
+    // If image is taller than A4, scale to fit page height instead
+    let finalWidth = imgWidth;
+    let finalHeight = imgHeight;
+    if (imgHeight > pageHeight) {
+      finalHeight = pageHeight;
+      finalWidth = (imgProps.width * pageHeight) / imgProps.height;
+    }
+
+    // Center the image
+    const x = (pageWidth - finalWidth) / 2;
+    const y = 0;
+
+    pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
+    pdf.save(`invoice_statement.pdf`);
+    setIsDownloading(false);
+  };
 
   if (!invoice) {
-    return <p>No client data provided. Please go back.</p>;
+    return <p>No data available. Please go back.</p>;
   }
 
   return (
@@ -81,20 +78,20 @@ function ViewStatement() {
         <div className="grid auto-rows-max items-start gap-6 md:gap-8 lg:col-span-2">
           {/* Header Section */}
           <div className="flex justify-between items-center bg-muted/40 p-4 rounded-lg shadow-sm">
-            <h1 className="text-2xl font-bold dark:text-gray-100">
-              Invoice {invoice.invoices.invoiceNumber}
-            </h1>
+            <h1 className="text-2xl font-bold dark:text-gray-100">Invoice</h1>
 
             <div className="flex gap-4">
-              <Button
-                onClick={handlePdfDownload}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Download className="w-4 h-4" /> Download PDF
-              </Button>
-              <Button className="flex items-center gap-2  cursor-pointer">
-                <Mail className="w-4 h-4" /> Send Mail
-              </Button>
+              {isDownloading ? (
+                <SpecialLoadingBtn />
+              ) : (
+                <Button
+                  onClick={handlePdfDownload}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Download className="w-4 h-4" /> Download PDF
+                </Button>
+              )}
+              
             </div>
           </div>
 
@@ -104,13 +101,13 @@ function ViewStatement() {
             className="shadow-md p-8 h-full min-h-screen flex flex-col"
           >
             <CardHeader>
-              <CardTitle className="text-4xl font-bold">INVOICE STATEMENT</CardTitle>
+              <CardTitle className="text-6xl font-bold">STATEMENT</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col justify-between">
               <div className="grid grid-cols-2 mb-4 gap-2">
                 <div className="flex flex-col gap-6 mb-4">
-                  <div className="border border-stone-400 p-4 rounded-2xl">
-                    <h2 className="text-xl font-bold">From:</h2>
+                  <div className="border border-stone-400 p-4 rounded-2xl text-xl">
+                    <h2 className="text-2xl font-bold">From:</h2>
                     <p>{bussiness.name}</p>
                     <p>
                       VAT No: {bussiness.vatNumber} CK Number:{" "}
@@ -121,35 +118,45 @@ function ViewStatement() {
                       cell: {bussiness.phone} Tel: {bussiness.telPhone}
                     </p>
                   </div>
-              
                 </div>
 
                 <div className="mb-4">
-                  <div className="border border-stone-400 p-4 rounded-2xl mb-4">
-                    <p className="text-lg">
-                      <strong>Date:</strong>{" "}
-                      {new Date().toLocaleDateString()}
+                  <div className="border border-stone-400 p-4 rounded-2xl text-xl">
+                    <h2 className="text-2xl font-bold">To:</h2>
+                    <p>{invoice.invoices[0].client.name}</p>
+                    <p>
+                      VAT No: {invoice.invoices[0].client.vatNumber} Reg No:{" "}
+                      {invoice.invoices[0].client.registrationNumber}
+                    </p>
+
+                    <p>{invoice.invoices[0].client.address}</p>
+                    <p>
+                      tel: {invoice.invoices[0].client.telphone} Fax:{" "}
+                      {invoice.invoices[0].client.fax}
                     </p>
                   </div>
-                      <div className="border border-stone-400 p-4 rounded-2xl">
-                    <h2 className="text-xl font-bold">To:</h2>
-                    <p>{invoice._id}</p>
-                  </div>
-                
                 </div>
+              </div>
+
+              <div className="border border-stone-400 p-4 rounded-2xl mb-4">
+                <p className="text-2xl">
+                  <strong>Date:</strong> {new Date().toLocaleDateString()}
+                </p>
               </div>
 
               {/* Items Table */}
               <table className="w-full border-collapse border border-gray-300 mb-6">
-                <thead className="bg-gray-200 text-lg">
+                <thead className="bg-gray-200 text-xl">
                   <tr>
-                    <th className="border border-gray-300 p-4">Invoice Number </th>
+                    <th className="border border-gray-300 p-4">
+                      Invoice Number{" "}
+                    </th>
                     <th className="border border-gray-300 p-4">PO Number</th>
-                    <th className="border border-gray-300 p-4">Date</th>
+                    <th className="border border-gray-300 p-4">Code</th>
                     <th className="border border-gray-300 p-4">Amount</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="text-xl">
                   {Array.from({
                     length: Math.max(20),
                   }).map((_, index) => {
@@ -159,18 +166,16 @@ function ViewStatement() {
                         <td className="border text-xl border-gray-300 p-4 text-center">
                           {item ? item.invoiceNumber : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4">
+                        <td className="border text-xl border-gray-300 p-4 text-center">
                           {item ? item.poNumber : ""}
                         </td>
                         <td className="border text-xl border-gray-300 p-4 text-center">
                           {item
-                            ?  new Date(item.date).toLocaleDateString()
+                            ? item.items.map((i) => i.description).join(",")
                             : ""}
                         </td>
                         <td className="border text-xl border-gray-300 p-4 text-center">
-                          {item
-                            ? item.totalAmount
-                            : ""}
+                          {item ? item.totalAmount : ""}
                         </td>
                       </tr>
                     );
@@ -179,16 +184,15 @@ function ViewStatement() {
 
                 {/* Totals Section */}
                 <tfoot>
-                 
                   <tr className="bg-gray-100  font-bold text-xl">
                     <td
                       colSpan={3}
-                      className="border font-bold  border-gray-300 p-4 text-right"
+                      className="border font-bold  border-gray-300 p-4 text-right "
                     >
                       Total Amount
                     </td>
                     <td className="border border-gray-300 p-4 text-center">
-                      R{(invoice.totalAmount ?? 0).toFixed(2)}
+                      R {(invoice.totalAmount ?? 0).toFixed(2)}
                     </td>
                   </tr>
                 </tfoot>
@@ -198,9 +202,7 @@ function ViewStatement() {
         </div>
       </main>
     </div>
-
-);
+  );
 }
 
 export default ViewStatement;
-

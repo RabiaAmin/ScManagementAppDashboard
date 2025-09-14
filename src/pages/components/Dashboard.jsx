@@ -8,9 +8,10 @@ import {
   CardFooter,
   CardTitle,
 } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
 import { useInvoices } from "@/hooks/useInvoices";
+import { Link,useNavigate } from 'react-router-dom';
 
 function Dashboard() {
   const { business } = useSelector((state) => state.business);
@@ -19,6 +20,11 @@ function Dashboard() {
 
   // Use custom hook to get all calculated values
   const { totalRevenue, outstandingRevenue, upcomingDueDates ,totalInvoicesOfThisMonth } = useInvoices(invoices);
+
+  const navigateTo = useNavigate();
+  const handleViewInvoice=(id)=>{
+    navigateTo(`/invoice/${id}`);
+  }
 
   return (
     <div className="flex flex-col p-2">
@@ -69,7 +75,7 @@ function Dashboard() {
             <Card className="flex flex-col justify-center">
               <CardHeader>
                 <CardTitle className="text-stone-500">Total Revenue of This Month</CardTitle>
-                <CardTitle className="text-4xl">R {totalRevenue}</CardTitle>
+                <CardTitle className="text-xl">R {totalRevenue}</CardTitle>
               </CardHeader>
             </Card>
 
@@ -77,7 +83,7 @@ function Dashboard() {
             <Card className="flex flex-col justify-center">
               <CardHeader>
                 <CardTitle className="text-stone-500">Outstanding Revenue of This Month</CardTitle>
-                <CardTitle className="text-4xl">R {outstandingRevenue}</CardTitle>
+                <CardTitle className="text-xl">R {outstandingRevenue}</CardTitle>
               </CardHeader>
             </Card>
 
@@ -110,7 +116,8 @@ function Dashboard() {
                     </thead>
                     <tbody>
                       {upcomingDueDates.map((inv) => (
-                        <tr key={inv._id} className="hover:bg-gray-50">
+                        
+                        <tr key={inv._id} className="hover:bg-gray-50 cursor-pointer" onClick={()=>handleViewInvoice(inv._id)}>
                           <td className="px-3 py-2 border-b">{inv.invoiceNumber}</td>
                           <td className="px-3 py-2 border-b">{inv.poNumber}</td>
                           <td className="px-3 py-2 border-b">
