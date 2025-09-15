@@ -1,42 +1,76 @@
-
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getAllInvoices,
+  getAllInvoicesOFThisMonth,
   deleteInvoice,
   updateInvoice,
 } from "@/store/slices/invoiceSlice";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Loader2, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
 
 function AllInvoices() {
   const dispatch = useDispatch();
   const { invoices, loading } = useSelector((state) => state.invoice);
-
+  const [isloading, setisLoading] = useState(true);
+  const [startDate , setStartDate] = useState("");
+  const [endDate,setEndDate] = useState("");
+  const [isSearch, setIsSearch] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    dispatch(getAllInvoices());
-  }, [dispatch]);
+    const now = new Date();
 
+    // Start of the month
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // End of the month
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    // Format as YYYY-MM-DD
+    const startDate = first.toISOString().split("T")[0];
+    const endDate = last.toISOString().split("T")[0];
+    setStartDate(startDate);
+    setEndDate(endDate);
+
+    fetchInvoices(startDate,endDate);
+  }, []);
+
+
+
+  const fetchInvoices=(start,end)=>{
+      dispatch(getAllInvoicesOFThisMonth(start,end));
+     
+        setisLoading(false);
+        setIsSearch(true);
+      
+  }
 
   const sortedInvoices = [...invoices].sort(
-  (a, b) => new Date(b.date) - new Date(a.date)
-);
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
-const filteredInvoices = sortedInvoices.filter((invoice) =>
-  invoice.poNumber.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  const filteredInvoices = sortedInvoices.filter((invoice) =>
+    invoice.poNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this invoice?")) {
@@ -44,12 +78,12 @@ const filteredInvoices = sortedInvoices.filter((invoice) =>
     }
   };
 
-
-
   const handleStatusChange = (invoice, newStatus) => {
     const updatedInvoice = { ...invoice, status: newStatus };
     dispatch(updateInvoice(invoice._id, updatedInvoice));
   };
+
+  
 
   return (
     <div className="p-6 space-y-6">
@@ -59,18 +93,46 @@ const filteredInvoices = sortedInvoices.filter((invoice) =>
           Total Invoices:{" "}
           <span className="text-primary">{filteredInvoices.length}</span>
         </div>
-        <Input
-          placeholder="Filter by Po Number..."
-          className="w-full md:w-72"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="flex items-end gap-2 my-4 justify-end">
+        <div>
+            <label className="text-stone-400">Start Date</label>
+           <Input type="date" value={startDate} onChange={(e)=>{setStartDate(e.target.value); setIsSearch(false) }}  />
+        </div>
+        <div>
+            <label className="text-stone-400">End Date</label>
+
+           <Input type="date" value={endDate} onChange={(e)=>setEndDate(e.target.value)} />
+        </div>
+        <div>
+
+         {
+         isloading ? <SpecialLoadingBtn/> :
+        <Button  disabled={isSearch}   onClick={()=>{fetchInvoices(startDate,endDate);setisLoading(true)}} >
+         Search 
+       </Button>
+         } 
+
+        </div>
+
+       
+       
+
+      </div>
       </div>
 
       {/* Card with Table */}
       <Card className="shadow-md">
         <CardHeader>
+          <div className="flex justify-between">
+
           <CardTitle className="text-xl font-bold">Invoice List</CardTitle>
+           <Input
+          placeholder="Filter by Po Number..."
+          className="w-full md:w-72"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -122,24 +184,22 @@ const filteredInvoices = sortedInvoices.filter((invoice) =>
                     </TableCell>
                     <TableCell className="flex justify-center space-x-3">
                       <Link to={`/invoice/${invoice._id}`}>
-                      
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="hover:bg-primary/10"
-                      >
-                        <Eye className="w-5 h-5 text-blue-600" />
-                      </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="hover:bg-primary/10"
+                        >
+                          <Eye className="w-5 h-5 text-blue-600" />
+                        </Button>
                       </Link>
                       <Link to={`/invoice/update/${invoice._id}`}>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="hover:bg-primary/10"
-                      
-                      >
-                        <Pencil className="w-5 h-5 text-green-600" />
-                      </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="hover:bg-primary/10"
+                        >
+                          <Pencil className="w-5 h-5 text-green-600" />
+                        </Button>
                       </Link>
                       <Button
                         size="icon"
@@ -161,6 +221,4 @@ const filteredInvoices = sortedInvoices.filter((invoice) =>
   );
 }
 
-export default AllInvoices
-
-
+export default AllInvoices;

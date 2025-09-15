@@ -157,7 +157,7 @@ function ViewInvoice() {
             <CardContent className="flex-1 flex flex-col justify-between">
               <div className="grid grid-cols-2 mb-4 gap-2">
                 <div className="flex flex-col gap-6 mb-4">
-                  <div className="border border-stone-400 p-4 rounded-2xl text-xl">
+                  <div className="border border-stone-400 p-4 rounded-2xl text-2xl">
                     <h2 className="text-2xl font-bold">From:</h2>
                     <p>{bussiness.name}</p>
                     <p>
@@ -169,32 +169,32 @@ function ViewInvoice() {
                       cell: {bussiness.phone} Tel: {bussiness.telPhone}
                     </p>
                   </div>
-                  <div className="border border-stone-400 p-4 rounded-2xl text-xl">
+                  <div className="border border-stone-400 p-4 rounded-2xl text-2xl">
                     <h2 className="text-2xl font-bold ">To:</h2>
                     <p>{client.name}</p>
                     <p>VAT No: {client.vatNumber}</p>
                     <p>Reg No: {client.registrationNumber}</p>
                     <p>{client.address}</p>
                     <p>
-                      tel: {client.telphone} Fax: {client.fax}
+                      tel: {client.telphone} phone:{client.phone} Fax: {client.fax}
                     </p>
                   </div>
                 </div>
 
-                <div className="mb-4">
+                <div className="mb-4  ">
                   <div className="border border-stone-400 p-4 rounded-2xl mb-4 ">
-                    <p className="text-xl">
+                    <p className="text-2xl">
                       <strong>Invoice No:</strong> {invoice.invoiceNumber}
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl mb-4">
-                    <p className="text-xl">
+                    <p className="text-2xl">
                       <strong>Date:</strong>{" "}
                       {new Date(invoice.date).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="border border-stone-400 p-4 rounded-2xl">
-                    <p className="text-xl">
+                    <p className="text-2xl">
                       <strong>PO Number:</strong> {invoice.poNumber}
                     </p>
                   </div>
@@ -203,7 +203,7 @@ function ViewInvoice() {
 
               {/* Items Table */}
               <table className="w-full border-collapse border border-gray-300 mb-6">
-                <thead className="bg-gray-200 text-xl">
+                <thead className="bg-gray-200 text-2xl">
                   <tr>
                     <th className="border border-gray-300 p-4">Qty</th>
                     <th className="border border-gray-300 p-4">Description</th>
@@ -211,31 +211,31 @@ function ViewInvoice() {
                     <th className="border border-gray-300 p-4">Amount</th>
                   </tr>
                 </thead>
-                <tbody className="text-xl">
+                <tbody className="text-2xl">
                   {Array.from({
                     length: Math.max(20, invoice.items?.length || 0),
                   }).map((_, index) => {
                     const item = invoice.items?.[index];
                     return (
                       <tr key={index} className="h-12">
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-2xl border-gray-300 p-4 text-center">
                           {item ? item.quantity : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4">
+                        <td className="border text-2xl border-gray-300 p-4">
                           {item ? item.description : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-2xl border-gray-300 p-4 text-center">
                           {item
-                            ? `R${
+                            ? `R ${
                                 item.unitPrice
                                   ? item.unitPrice.toFixed(2)
                                   : "0.00"
                               }`
                             : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-2xl border-gray-300 p-4 text-center">
                           {item
-                            ? `R${
+                            ? `R ${
                                 item.amount ? item.amount.toFixed(2) : "0.00"
                               }`
                             : ""}
@@ -246,38 +246,38 @@ function ViewInvoice() {
                 </tbody>
 
                 {/* Totals Section */}
-                <tfoot className="text-xl">
+                <tfoot >
                   <tr>
                     <td
                       colSpan={3}
-                      className="border text-xl border-gray-300 p-4 text-right font-bold"
+                      className="border text-2xl border-gray-300 p-4 text-right font-bold"
                     >
                       Subtotal
                     </td>
-                    <td className="border text-xl border-gray-300 p-4 text-center">
-                      R{(invoice.subTotal ?? 0).toFixed(2)}
+                    <td className="border text-2xl border-gray-300 p-4 text-center">
+                      R {(invoice.subTotal ?? 0).toFixed(2)}
                     </td>
                   </tr>
                   <tr>
                     <td
                       colSpan={3}
-                      className="border  text-xl border-gray-300 p-4 text-right font-bold"
+                      className="border  text-2xl border-gray-300 p-4 text-right font-bold"
                     >
                       Tax
                     </td>
-                    <td className="border  text-xl border-gray-300 p-4 text-center">
-                      R{(invoice.tax ?? 0).toFixed(2)}
+                    <td className="border  text-2xl border-gray-300 p-4 text-center">
+                      R {(invoice.tax ?? 0).toFixed(2)}
                     </td>
                   </tr>
-                  <tr className="bg-gray-100  font-bold text-xl">
+                  <tr className="bg-gray-100  font-bold text-2xl">
                     <td
                       colSpan={3}
-                      className="border font-bold  border-gray-300 p-4 text-right"
+                      className="border font-bold   border-gray-300 p-4 text-right"
                     >
                       Total Amount
                     </td>
                     <td className="border border-gray-300 p-4 text-center">
-                      R{(invoice.totalAmount ?? 0).toFixed(2)}
+                      R {(invoice.totalAmount ?? 0).toFixed(2)}
                     </td>
                   </tr>
                 </tfoot>

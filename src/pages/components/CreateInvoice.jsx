@@ -10,7 +10,7 @@ import {
   createInvoice,
   resetInvoice,
   clearInvoiceErrors,
-  getAllInvoices,
+
 } from "@/store/Slices/invoiceSlice";
 
 function CreateInvoice() {
@@ -65,7 +65,7 @@ function CreateInvoice() {
     if (isCreated) {
       toast.success(message);
       dispatch(resetInvoice());
-      dispatch(getAllInvoices());
+
       setPoNumber("");
       setDate(new Date().toISOString().slice(0, 10));
       setToClient("");

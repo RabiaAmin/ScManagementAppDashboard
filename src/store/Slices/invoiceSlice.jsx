@@ -181,10 +181,10 @@ export const getInvoice = (id) => async (dispatch) => {
   }
 };
 
-export const getAllInvoices = () => async (dispatch) => {
+export const getAllInvoicesOFThisMonth = (start,end) => async (dispatch) => {
   dispatch(invoiceSlice.actions.getAllInvoicesRequest());
   try {
-    const { data } = await axios.get(`${BASE_URL}/getAll`, { withCredentials: true });
+    const { data } = await axios.get(`${BASE_URL}/getAllOfThisMonth?startDate=${start}&endDate=${end}&_=${new Date().getTime()}`, { withCredentials: true });
     dispatch(invoiceSlice.actions.getAllInvoicesSuccess(data.invoices));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {

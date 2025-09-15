@@ -18,7 +18,7 @@ import {
   resetInvoice,
   getInvoice,
   clearInvoiceErrors,
-  getAllInvoices,
+
 } from "@/store/Slices/invoiceSlice";
 import { useParams } from "react-router-dom";
 
@@ -123,7 +123,7 @@ const handleItemChange = (index, field, value) => {
     if (isUpdated) {
       toast.success(message);
       dispatch(resetInvoice());
-      dispatch(getAllInvoices());
+    
     }
   }, [error, isUpdated, message, dispatch, id]);
 
