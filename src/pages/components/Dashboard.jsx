@@ -12,11 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { useInvoices } from "@/hooks/useInvoices";
 import { Link,useNavigate } from 'react-router-dom';
+import Loader  from '../../components/Loader';
 
 function Dashboard() {
   const { business } = useSelector((state) => state.business);
   const { clients } = useSelector((state) => state.client);
-  const { invoices } = useSelector((state) => state.invoice);
+  const { loading,  invoices } = useSelector((state) => state.invoice);
 
   // Use custom hook to get all calculated values
   const { totalRevenue, outstandingRevenue, upcomingDueDates ,totalInvoicesOfThisMonth } = useInvoices(invoices);
@@ -24,6 +25,10 @@ function Dashboard() {
   const navigateTo = useNavigate();
   const handleViewInvoice=(id)=>{
     navigateTo(`/invoice/${id}`);
+  }
+
+  if(loading){
+    return <Loader/>
   }
 
   return (

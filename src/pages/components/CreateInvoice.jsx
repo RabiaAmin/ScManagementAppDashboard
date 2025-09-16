@@ -20,6 +20,7 @@ function CreateInvoice() {
   const { clients } = useSelector(state => state.client);
 
   const [poNumber, setPoNumber] = useState("");
+  const [invNo , setInvNo] = useState("");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [fromBusiness, setFromBusiness] = useState(business?._id || "");
   const [toClient, setToClient] = useState("");
@@ -53,7 +54,7 @@ function CreateInvoice() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const invoiceData = { poNumber, date, fromBusiness, toClient, items, subTotal, tax, totalAmount, status };
+    const invoiceData = { invNo,poNumber, date, fromBusiness, toClient, items, subTotal, tax, totalAmount, status };
     dispatch(createInvoice(invoiceData));
   };
 
@@ -65,7 +66,7 @@ function CreateInvoice() {
     if (isCreated) {
       toast.success(message);
       dispatch(resetInvoice());
-
+      setInvNo("");
       setPoNumber("");
       setDate(new Date().toISOString().slice(0, 10));
       setToClient("");
@@ -89,6 +90,17 @@ function CreateInvoice() {
           {/* PO Number & Date */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="w-full">
+              <Label>Inv Number</Label>
+              <Input
+                type="text"
+                placeholder="only for manual invoice number"
+                value={invNo}
+                onChange={e => setInvNo(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+                <div className="w-full">
               <Label>PO Number</Label>
               <Input
                 type="text"
@@ -185,7 +197,7 @@ function CreateInvoice() {
 
                 <div className="flex-1 min-w-[120px]">
                   <Label className="text-stone-400">Amount</Label>
-                  <Input type="number" value={item.amount} readOnly className="w-full" />
+                  <Input type="number" value={item.amount.toFixed(2)} readOnly className="w-full" />
                 </div>
 
                 <div className="flex justify-end items-end min-w-[100px]">
