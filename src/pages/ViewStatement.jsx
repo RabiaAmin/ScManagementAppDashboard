@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,17 @@ function ViewStatement() {
   const { state: invoice } = useLocation();
   const [bussiness, setBusiness] = useState({});
   const [isDownloading, setIsDownloading] = useState(false);
+
+    // ✅ Sort invoices as soon as invoice data is available
+  const sortedInvoices = useMemo(() => {
+    if (!invoice?.invoices) return [];
+    return [...invoice.invoices].sort((a, b) => {
+      // Convert to number if invoiceNumber is a string
+      return Number(a.invoiceNumber) - Number(b.invoiceNumber);
+    });
+  }, [invoice]);
+
+
   useEffect(() => {
     const fetchBusiness = async () => {
       try {
@@ -158,9 +169,9 @@ function ViewStatement() {
                 </thead>
                 <tbody className="text-xl">
                   {Array.from({
-                    length: Math.max(20),
+                    length: Math.min(20),
                   }).map((_, index) => {
-                    const item = invoice.invoices?.[index];
+                    const item = sortedInvoices?.[index];
                     return (
                       <tr key={index} className="h-12">
                         <td className="border text-xl border-gray-300 p-4 text-center">

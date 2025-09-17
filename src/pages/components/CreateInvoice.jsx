@@ -10,7 +10,6 @@ import {
   createInvoice,
   resetInvoice,
   clearInvoiceErrors,
-
 } from "@/store/Slices/invoiceSlice";
 
 function CreateInvoice() {
@@ -29,16 +28,15 @@ function CreateInvoice() {
   const [tax, setTax] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [status, setStatus] = useState("Pending");
+  const [vatCharge, setVatCharge] = useState(true);
 
   useEffect(() => {
     const sub = items.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
     setSubTotal(sub);
-    const calculatedTax =  sub*0.15;
+    const calculatedTax = vatCharge ? sub * 0.15 : 0;
     setTax(calculatedTax); 
     setTotalAmount(sub + calculatedTax);
-  }, [items, tax]);
-
-
+  }, [items, vatCharge]);
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...items];
@@ -54,7 +52,7 @@ function CreateInvoice() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const invoiceData = { invNo,poNumber, date, fromBusiness, toClient, items, subTotal, tax, totalAmount, status };
+    const invoiceData = { invNo, poNumber, date, fromBusiness, toClient, items, subTotal, tax, totalAmount, status };
     dispatch(createInvoice(invoiceData));
   };
 
@@ -75,6 +73,7 @@ function CreateInvoice() {
       setTax(0);
       setTotalAmount(0);
       setStatus("Pending");
+      setVatCharge(true);
     }
   }, [error, isCreated, message, dispatch]);
 
@@ -87,7 +86,6 @@ function CreateInvoice() {
         </div>
 
         <form onSubmit={handleSubmit} className="grid gap-6">
-          {/* PO Number & Date */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="w-full">
               <Label>Inv Number</Label>
@@ -100,7 +98,7 @@ function CreateInvoice() {
               />
             </div>
 
-                <div className="w-full">
+            <div className="w-full">
               <Label>PO Number</Label>
               <Input
                 type="text"
@@ -125,7 +123,6 @@ function CreateInvoice() {
             </div>
           </div>
 
-          {/* From Business & To Client */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="w-full">
               <Label>From Business</Label>
@@ -157,7 +154,6 @@ function CreateInvoice() {
             </div>
           </div>
 
-          {/* Dynamic Items */}
           <div className="grid gap-4">
             <Label>Items</Label>
             {items.map((item, index) => (
@@ -213,7 +209,19 @@ function CreateInvoice() {
             </Button>
           </div>
 
-          {/* Totals & Status */}
+          <div className="flex items-center gap-2 mt-4">
+            <input
+              type="checkbox"
+              id="vatCharge"
+              checked={vatCharge}
+              onChange={() => setVatCharge(!vatCharge)}
+              className="w-4 h-4"
+            />
+            <label htmlFor="vatCharge" className="text-sm">
+              Charge VAT (15%)
+            </label>
+          </div>
+
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <Label>Subtotal</Label>
@@ -221,7 +229,7 @@ function CreateInvoice() {
             </div>
 
             <div>
-              <Label>15% Tax</Label>
+              <Label>{vatCharge? "15% tax":"0% tax"}</Label>
               <Input type="number" value={tax} readOnly className="w-full" />
             </div>
 
@@ -240,7 +248,6 @@ function CreateInvoice() {
             </div>
           </div>
 
-          {/* Submit */}
           <div className="w-full mt-4">
             {!loading ? (
               <Button className="w-full sm:w-auto" type="submit">

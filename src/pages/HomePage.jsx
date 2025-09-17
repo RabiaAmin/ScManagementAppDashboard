@@ -18,6 +18,7 @@ import {
   LogOut,
   Package,
   Package2,
+  Package2Icon,
   PanelLeft,
   PencilRuler,
   User,
@@ -32,6 +33,7 @@ import Dashboard from "./components/Dashboard";
 import Account from "./components/Account";
 import Invoices from "./components/Invoices";
 import Clients from "./components/Clients";
+import Orders from "./components/Orders";
 
 function HomePage() {
   const [active, setActive] = useState("Dashboard");
@@ -76,6 +78,12 @@ function HomePage() {
               active={active}
               setActive={setActive}
             />
+             <SideBarLink
+              menu="Orders"
+              icon={Package2Icon}
+              active={active}
+              setActive={setActive}
+            />
                <SideBarLink
               menu="Clients"
               icon={Users2}
@@ -89,6 +97,7 @@ function HomePage() {
               active={active}
               setActive={setActive}
             />
+            
           </nav>
 
           {/* Logout Button */}
@@ -138,6 +147,18 @@ function HomePage() {
                   >
                     <Home className="h-5 w-5" />
                     Dashboard
+                  </Link>
+                  <Link
+                    to="#"
+                    onClick={() => setActive("Orders")}
+                    className={`${
+                      active === "Orders"
+                        ? "text-stone-900"
+                        : "text-stone-600 hover:text-stone-900"
+                    } flex items-center gap-4 px-2.5`}
+                  >
+                    <Home className="h-5 w-5" />
+                    Orders
                   </Link>
                   <Link
                     to="#"
@@ -213,6 +234,8 @@ function HomePage() {
                   return <Invoices />;
                 case "Clients":
                   return <Clients />;
+                case "Orders":
+                  return <Orders/>
                 default:
                   return null;
               }

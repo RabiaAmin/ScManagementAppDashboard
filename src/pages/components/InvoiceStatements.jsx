@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
 import SpecialLoadingBtn from "../components/SpecialLoadingBtn"
 import { Button } from "@/components/ui/button";
-const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
 
 function InvoiceStatements() {
   const [statements, setStatements] = useState([]);
@@ -38,7 +37,7 @@ function InvoiceStatements() {
 
    const fetchStatements = async (start,end) => {
       try {
-       
+       const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
         const res = await axios.get(
           `${BASE_URL}/weekly-statements?startDate=${start}&endDate=${end}&_=${new Date().getTime()}`,
           { withCredentials: true }
