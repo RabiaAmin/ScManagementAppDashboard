@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import jsPDF from "jspdf";
-const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
+const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE_VIEWINVOICE;
 
 function ViewInvoice() {
   const { id } = useParams();
@@ -67,7 +67,7 @@ function ViewInvoice() {
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/get/${id}`, {
+        const res = await axios.get(`${BASE_URL}/${id}`, {
           withCredentials: true,
         });
         const inv = res.data.invoice;
@@ -88,7 +88,7 @@ function ViewInvoice() {
     const fetchBusiness = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL_BUSINESS}/get`,
+          `${import.meta.env.VITE_BACKEND_URL_BUSINESS_VIEW}`,
           { withCredentials: true }
         );
         setBusiness(res.data.business);

@@ -28,7 +28,7 @@ function ViewStatement() {
     const fetchBusiness = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL_BUSINESS}/get`,
+          `${import.meta.env.VITE_BACKEND_URL_BUSINESS_VIEW}`,
           { withCredentials: true }
         );
         setBusiness(res.data.business);

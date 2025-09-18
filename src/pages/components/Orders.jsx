@@ -37,9 +37,9 @@ function Orders() {
 
   const fetchData = async (start, end) => {
     try {
-      const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
+      const BASE_URL = import.meta.env.VITE_BACKEND_URL_GET_ORDERS;
       const res = await axios.get(
-        `${BASE_URL}/getOrdersPerProduct?startDate=${start}&endDate=${end}&_=${new Date().getTime()}`,
+        `${BASE_URL}?startDate=${start}&endDate=${end}&_=${new Date().getTime()}`,
         { withCredentials: true }
       );
       const data = res.data.data;
