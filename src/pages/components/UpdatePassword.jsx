@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React, { useEffect, useState } from "react";
-import SpecialLoadingBtn from "./specialLoadingBtn";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
 import { useDispatch, useSelector } from "react-redux";
 import { clearAllUserErrors, getUser, resetProfile, updatePassword } from "@/store/slices/userSlice";
 import { toast } from "react-toastify";

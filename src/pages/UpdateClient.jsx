@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateClient } from "@/store/slices/clientSlice";
-import SpecialLoadingBtn from "./components/specialLoadingBtn";
+import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
+
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_CLIENT;
 import {
   

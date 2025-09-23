@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Input } from "@/components/ui/input";
-import SpecialLoadingBtn from "../components/SpecialLoadingBtn"
+import SpecialLoadingBtn from "./SpecialLoadingBtn"
 import { Button } from "@/components/ui/button";
 
 function InvoiceStatements() {

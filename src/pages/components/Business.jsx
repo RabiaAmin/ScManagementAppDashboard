@@ -14,7 +14,7 @@ import {
 } from "@/store/slices/businessSlice";
 import { toast } from "react-toastify";
 
-import SpecialLoadingBtn from "./specialLoadingBtn";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
 
 
 function Business() {

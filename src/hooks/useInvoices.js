@@ -27,6 +27,14 @@ export const useInvoices = (invoices) => {
         .toFixed(2)
     );
 
+       // Calculate Paid Amount (rounded to 2 decimals)
+    const PaidAmount = Number(
+      currentMonthInvoices
+        .filter((inv) => inv.status === "Paid")
+        .reduce((sum, inv) => sum + inv.totalAmount, 0)
+        .toFixed(2)
+    );
+
     // Upcoming due dates (unpaid, sorted)
     const upcomingDueDates = currentMonthInvoices
       .filter((inv) => inv.status !== "Paid")
@@ -40,6 +48,7 @@ export const useInvoices = (invoices) => {
       outstandingRevenue,
       upcomingDueDates,
       totalInvoicesOfThisMonth,
+      PaidAmount
     };
   }, [invoices]);
 };

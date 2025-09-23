@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import SpecialLoadingBtn from "./specialLoadingBtn";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
 import { clearAllUserErrors, getUser, resetProfile, updateProfile } from "@/store/slices/userSlice";
 import { toast } from "react-toastify";
 

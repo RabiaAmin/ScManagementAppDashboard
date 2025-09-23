@@ -25,6 +25,7 @@ function Dashboard() {
     outstandingRevenue,
     upcomingDueDates,
     totalInvoicesOfThisMonth,
+    PaidAmount
   } = useInvoices(invoices);
 
   const navigateTo = useNavigate();
@@ -85,7 +86,7 @@ function Dashboard() {
             {/* Total Revenue (current month) */}
             <Card className="flex flex-col justify-center">
               <CardHeader>
-                <CardTitle className="text-stone-500">
+                <CardTitle className="text-blue-600">
                   Total Revenue of This Month
                 </CardTitle>
                 <CardTitle className="text-xl">R {totalRevenue}</CardTitle>
@@ -95,11 +96,22 @@ function Dashboard() {
             {/* Outstanding Revenue (current month) */}
             <Card className="flex flex-col justify-center">
               <CardHeader>
-                <CardTitle className="text-stone-500">
+                <CardTitle className="text-orange-600">
                   Outstanding Revenue of This Month
                 </CardTitle>
                 <CardTitle className="text-xl">
                   R {outstandingRevenue}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+               {/* Paid Amount (current month) */}
+            <Card className="flex flex-col justify-center">
+              <CardHeader>
+                <CardTitle className="text-green-600">
+                  Paid Amount of This Month
+                </CardTitle>
+                <CardTitle className="text-xl">
+                  R {PaidAmount}
                 </CardTitle>
               </CardHeader>
             </Card>
