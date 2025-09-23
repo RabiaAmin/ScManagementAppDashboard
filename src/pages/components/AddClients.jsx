@@ -7,7 +7,7 @@ import SpecialLoadingBtn from './SpecialLoadingBtn';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useEffect } from 'react';
-import {addClient,resetClient,clearClientErrors,getAllClients} from '@/store/Slices/clientSlice';
+import {addClient,resetClient,clearClientErrors,getAllClients} from '@/store/slices/clientSlice';
 import { useDispatch } from 'react-redux';
 
 

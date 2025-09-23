@@ -19,7 +19,7 @@ import {
   getInvoice,
   clearInvoiceErrors,
 
-} from "@/store/Slices/invoiceSlice";
+} from "@/store/slices/invoiceSlice";
 import { useParams } from "react-router-dom";
 
 function UpdateInvoice() {

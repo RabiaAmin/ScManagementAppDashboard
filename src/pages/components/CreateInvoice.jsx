@@ -10,7 +10,7 @@ import {
   createInvoice,
   resetInvoice,
   clearInvoiceErrors,
-} from "@/store/Slices/invoiceSlice";
+} from "@/store/slices/invoiceSlice";
 
 function CreateInvoice() {
   const dispatch = useDispatch();

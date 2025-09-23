@@ -13,7 +13,7 @@ import {
   getAllClients,
   resetClient,
   clearClientErrors,
-} from "../store/Slices/clientSlice";
+} from "../store/slices/clientSlice";
 import { toast } from "react-toastify";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";

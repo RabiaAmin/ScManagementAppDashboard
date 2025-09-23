@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { clearAllUserErrors, login } from "../store/Slices/userSlice";
+import { clearAllUserErrors, login } from "../store/slices/userSlice";
 import { toast } from "react-toastify";
 import SpecialLoadingBtn from "./components/SpecialLoadingBtn"
 
