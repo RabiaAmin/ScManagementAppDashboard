@@ -8,10 +8,10 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import { useDispatch } from 'react-redux';
-import { getUser } from './store/Slices/userSlice';
-import {getAllInvoicesOFThisMonth} from "./store/Slices/invoiceSlice"
-import {getBusiness} from './store/Slices/businessSlice';
-import {getAllClients} from './store/Slices/clientSlice';
+import { getUser } from './store/slices/userSlice';
+import {getAllInvoicesOFThisMonth} from "./store/slices/invoiceSlice"
+import {getBusiness} from './store/slices/businessSlice';
+import {getAllClients} from './store/slices/clientSlice';
 import UpdateClient from './pages/UpdateClient';
 
 import ViewInvoice from './pages/ViewInvoice';
