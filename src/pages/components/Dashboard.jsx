@@ -33,7 +33,7 @@ function Dashboard() {
     navigateTo(`/invoice/${id}`);
   };
 
-  if (loading) {
+  if (loading || !business || !clients ) {
     return <Loader />;
   }
 

@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Mail } from "lucide-react";
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
 
@@ -50,7 +50,7 @@ function ViewStatement() {
     if (!element) return;
 
     // Convert HTML to PNG
-    const imgData = await toPng(element, { cacheBust: true });
+    const imgData = await toJpeg(element, { cacheBust: true , pixelRatio: 1 }, { quality: 0.9 });
 
     // Create A4 PDF in mm
     const pdf = new jsPDF("p", "mm", "a4");
