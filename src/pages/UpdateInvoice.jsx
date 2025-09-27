@@ -36,6 +36,7 @@ function UpdateInvoice() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [fromBusiness, setFromBusiness] = useState("");
   const [toClient, setToClient] = useState("");
+  
   const [items, setItems] = useState([
     { quantity: 1, description: "", unitPrice: 0, amount: 0 },
   ]);
@@ -44,9 +45,17 @@ function UpdateInvoice() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [status, setStatus] = useState("Pending");
 
+  useEffect(() => {
+  dispatch(getInvoice(id));
+}, [dispatch, id]);
 
   useEffect(() => {
     if (invoice) {
+   
+      if(invoice.toClient){
+           setToClient(invoice.toClient);
+      }
+  
       setPoNumber(invoice.poNumber || "");
       setDate(
         invoice.date
@@ -54,7 +63,7 @@ function UpdateInvoice() {
           : new Date().toISOString().slice(0, 10)
       );
       setFromBusiness(invoice.fromBusiness || business?._id || "");
-      setToClient(invoice.toClient || "");
+   
       setItems(
         invoice.items?.length
           ? invoice.items
@@ -65,7 +74,7 @@ function UpdateInvoice() {
       setTotalAmount(invoice.totalAmount || 0);
       setStatus(invoice.status || "Pending");
     }
-  }, [invoice, business]);
+  }, [invoice , business ]);
 
   // Recalculate totals when items or tax change
   useEffect(() => {
@@ -73,9 +82,12 @@ function UpdateInvoice() {
       (acc, item) => acc + item.quantity * item.unitPrice,
       0
     );
+    
     setSubTotal(sub);
+    const calculatedTax = sub * 0.15 ;
+    setTax(calculatedTax );
     setTotalAmount(sub + Number(tax || 0));
-  }, [items, tax]);
+  }, [items]);
 
 const handleItemChange = (index, field, value) => {
   const updatedItems = [...items];
@@ -113,8 +125,10 @@ const handleItemChange = (index, field, value) => {
     dispatch(updateInvoice(id, invoiceData));
   };
 
+
+
   useEffect(() => {
-    dispatch(getInvoice(id));
+    
 
     if (error) {
       toast.error(error);
@@ -125,11 +139,16 @@ const handleItemChange = (index, field, value) => {
       dispatch(resetInvoice());
     
     }
-  }, [error, isUpdated, message, dispatch, id]);
+  }, [error, isUpdated, message, dispatch]);
 
-  if (loading || !invoice) {
+
+
+
+  if (loading || !invoice || !business) {
     return <Loader />;
   }
+
+
 
   return (
     <div className="w-full h-[100vh] p-4 sm:p-6 md:p-8">
@@ -186,12 +205,13 @@ const handleItemChange = (index, field, value) => {
 
             <div className="w-full">
               <Label>To Client</Label>
+            
               <Select
                 value={toClient}
                 onValueChange={(val) => setToClient(val)}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a client" />
+                  <SelectValue  placeholder="Select a client" />
                 </SelectTrigger>
                 <SelectContent>
                   {clients.map((client) => (
@@ -201,6 +221,8 @@ const handleItemChange = (index, field, value) => {
                   ))}
                 </SelectContent>
               </Select>
+              
+          
             </div>
           </div>
 

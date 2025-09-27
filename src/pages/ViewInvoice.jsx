@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Mail } from "lucide-react";
-import { toPng } from "html-to-image";
+import { toJpeg } from "html-to-image";
 import { toast } from "react-toastify";
 import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
 
@@ -35,7 +35,7 @@ function ViewInvoice() {
     if (!element) return;
 
     // Convert HTML to PNG
-    const imgData = await toPng(element, { cacheBust: true });
+    const imgData = await toJpeg(element, { cacheBust: true , pixelRatio: 1 }, { quality: 0.9 });
 
     // Create A4 PDF in mm
     const pdf = new jsPDF("p", "mm", "a4");
@@ -59,7 +59,7 @@ function ViewInvoice() {
     const x = (pageWidth - finalWidth) / 2;
     const y = 0;
 
-    pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
+    pdf.addImage(imgData, "JPEG", x, y, finalWidth, finalHeight);
     pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
     setIsDownloading(false);
   };
