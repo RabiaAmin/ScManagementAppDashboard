@@ -180,7 +180,6 @@ const handleItemChange = (index, field, value) => {
               <Input
                 type="date"
                 value={date}
-                readOnly
                 onChange={(e) => setDate(e.target.value)}
                 required
                 className="w-full"
