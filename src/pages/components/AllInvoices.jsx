@@ -41,7 +41,7 @@ function AllInvoices() {
 
 
 const fetchInvoices = (page, limit) => {
-    dispatch(getAllInvoicesOFThisMonth({ page, limit }));
+    dispatch(getAllInvoicesOFThisMonth( page, limit ));
   };
 
   const sortedInvoices = [...invoices].sort(
