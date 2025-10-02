@@ -28,8 +28,8 @@ import { Link } from "react-router-dom";
 
 function AllInvoices() {
   const dispatch = useDispatch();
-  const { invoices, loading ,totalPages } = useSelector((state) => state.invoice);
- 
+  const { invoices, loading , totalPages , totalRecords } = useSelector((state) => state.invoice);
+  
    const [page, setPage] = useState(1);
   const [limit] = useState(10); // invoices per page
 
@@ -71,7 +71,7 @@ const fetchInvoices = (page, limit) => {
       <div className="flex flex-col md:flex-row justify-between items-center gap-4">
         <div className="text-lg font-semibold">
           Total Invoices:{" "}
-          <span className="text-primary">{filteredInvoices.length}</span>
+          <span className="text-primary">{totalRecords}</span>
         </div>
       </div>
 

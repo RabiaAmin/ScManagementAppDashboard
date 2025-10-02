@@ -10,23 +10,14 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
-import { useInvoices } from "@/hooks/useInvoices";
 import { Link, useNavigate } from "react-router-dom";
 import Loader from "../../components/Loader";
 
 function Dashboard() {
   const { business } = useSelector((state) => state.business);
   const { clients } = useSelector((state) => state.client);
-  const { loading, invoices } = useSelector((state) => state.invoice);
+  const { loading,stats,totalRecords} = useSelector((state) => state.invoice);
 
-  // Use custom hook to get all calculated values
-  const {
-    totalRevenue,
-    outstandingRevenue,
-    upcomingDueDates,
-    totalInvoicesOfThisMonth,
-    PaidAmount
-  } = useInvoices(invoices);
 
   const navigateTo = useNavigate();
   const handleViewInvoice = (id) => {
@@ -65,7 +56,7 @@ function Dashboard() {
             <Card className="flex flex-col justify-center">
               <CardHeader className="pb-2">
                 <CardTitle className="text-stone-500">
-                  Current Clients
+                  Current Active Clients
                 </CardTitle>
                 <CardTitle className="text-6xl">
                   {clients && clients.length}
@@ -78,18 +69,22 @@ function Dashboard() {
               <CardHeader>
                 <CardTitle className="text-stone-500">Total Invoices</CardTitle>
                 <CardTitle className="text-6xl">
-                  {invoices && invoices.length}
+                  {totalRecords}
                 </CardTitle>
               </CardHeader>
             </Card>
+
+         
 
             {/* Total Revenue (current month) */}
             <Card className="flex flex-col justify-center">
               <CardHeader>
                 <CardTitle className="text-blue-600">
-                  Total Revenue of This Month
+                  Total Revenue <br /> <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
                 </CardTitle>
-                <CardTitle className="text-xl">R {totalRevenue}</CardTitle>
+                <CardTitle className="text-xl">R {stats.totalRevenue}</CardTitle>
               </CardHeader>
             </Card>
 
@@ -97,10 +92,12 @@ function Dashboard() {
             <Card className="flex flex-col justify-center">
               <CardHeader>
                 <CardTitle className="text-orange-600">
-                  Outstanding Revenue of This Month
+                  Outstanding Revenue <br /> <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
                 </CardTitle>
                 <CardTitle className="text-xl">
-                  R {outstandingRevenue}
+                  R {stats.outstandingRevenue}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -108,21 +105,25 @@ function Dashboard() {
             <Card className="flex flex-col justify-center">
               <CardHeader>
                 <CardTitle className="text-green-600">
-                  Paid Amount of This Month
+                  Paid Amount <br /> <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
                 </CardTitle>
                 <CardTitle className="text-xl">
-                  R {PaidAmount}
+                  R {stats.PaidAmount}
                 </CardTitle>
               </CardHeader>
             </Card>
 
             <Card className="flex flex-col justify-center">
               <CardHeader>
-                <CardTitle className="text-stone-500">
-                  Total Invoices of This Month
+                <CardTitle className="text-yellow-600">
+                  Total Invoices <br /> <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
                 </CardTitle>
                 <CardTitle className="text-4xl">
-                  R {totalInvoicesOfThisMonth}
+                  R {stats.totalInvoicesOfThisMonth}
                 </CardTitle>
               </CardHeader>
             </Card>
@@ -131,12 +132,14 @@ function Dashboard() {
           {/* Upcoming Due Dates (current month) */}
           <Card className="flex flex-col">
             <CardHeader>
-              <CardTitle className="text-stone-500">
-                Upcoming Due Dates of This Month
+              <CardTitle className="text-blue-600">
+                Upcoming Due Dates <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {upcomingDueDates && upcomingDueDates.length > 0 ? (
+              {stats.upcomingDueDates && stats.upcomingDueDates.length > 0 ? (
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-sm border border-gray-200 rounded-lg">
                     <thead>
@@ -149,7 +152,7 @@ function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {upcomingDueDates.map((inv) => (
+                      {stats.upcomingDueDates.map((inv) => (
                         <tr
                           key={inv._id}
                           className="hover:bg-gray-50 cursor-pointer"

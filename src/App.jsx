@@ -29,7 +29,7 @@ function App() {
       dispatch(getUser());
       dispatch(getBusiness());
       dispatch(getAllClients());
-      dispatch(getAllInvoicesOFThisMonth(1,15));
+      dispatch(getAllInvoicesOFThisMonth(1,10));
      
     
       setLoading(false);

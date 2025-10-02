@@ -1,19 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE; 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
 
 const invoiceSlice = createSlice({
   name: "invoice",
   initialState: {
     loading: false,
-    invoices: [],    
-    invoice: {},      
-    isCreated: false, 
-    isUpdated: false, 
+    invoices: [],
+    invoice: {},
+    isCreated: false,
+    isUpdated: false,
     isDeleted: false,
     error: null,
     message: null,
+    page: 1,
+    totalPages: 1,
+    totalRecords: 0,
+    stats: {},
+    
   },
   reducers: {
     // Create invoice
@@ -96,7 +101,11 @@ const invoiceSlice = createSlice({
     },
     getAllInvoicesSuccess(state, action) {
       state.loading = false;
-      state.invoices = action.payload;
+      state.invoices = action.payload.invoices;
+      state.stats = action.payload.stats;
+      state.page = action.payload.page;
+      state.totalPages = action.payload.totalPages;
+      state.totalRecords = action.payload.totalRecords;
     },
     getAllInvoicesFail(state, action) {
       state.loading = false;
@@ -124,16 +133,17 @@ const invoiceSlice = createSlice({
 export const createInvoice = (invoiceData) => async (dispatch) => {
   dispatch(invoiceSlice.actions.createInvoiceRequest());
   try {
-    const { data } = await axios.post(
-      `${BASE_URL}/create`,
-      invoiceData,
-      { withCredentials: true, headers: { "Content-Type": "application/json" } }
-    );
+    const { data } = await axios.post(`${BASE_URL}/create`, invoiceData, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    });
     dispatch(invoiceSlice.actions.createInvoiceSuccess(data.invoice));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(
-      invoiceSlice.actions.createInvoiceFail(error.response?.data?.message || error.message)
+      invoiceSlice.actions.createInvoiceFail(
+        error.response?.data?.message || error.message
+      )
     );
   }
 };
@@ -141,16 +151,17 @@ export const createInvoice = (invoiceData) => async (dispatch) => {
 export const updateInvoice = (id, invoiceData) => async (dispatch) => {
   dispatch(invoiceSlice.actions.updateInvoiceRequest());
   try {
-    const { data } = await axios.put(
-      `${BASE_URL}/update/${id}`,
-      invoiceData,
-      { withCredentials: true, headers: { "Content-Type": "application/json" } }
-    );
+    const { data } = await axios.put(`${BASE_URL}/update/${id}`, invoiceData, {
+      withCredentials: true,
+      headers: { "Content-Type": "application/json" },
+    });
     dispatch(invoiceSlice.actions.updateInvoiceSuccess(data.invoice));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(
-      invoiceSlice.actions.updateInvoiceFail(error.response?.data?.message || error.message)
+      invoiceSlice.actions.updateInvoiceFail(
+        error.response?.data?.message || error.message
+      )
     );
   }
 };
@@ -163,7 +174,9 @@ export const deleteInvoice = (id) => async (dispatch) => {
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(
-      invoiceSlice.actions.deleteInvoiceFail(error.response?.data?.message || error.message)
+      invoiceSlice.actions.deleteInvoiceFail(
+        error.response?.data?.message || error.message
+      )
     );
   }
 };
@@ -171,25 +184,34 @@ export const deleteInvoice = (id) => async (dispatch) => {
 export const getInvoice = (id) => async (dispatch) => {
   dispatch(invoiceSlice.actions.getInvoiceRequest());
   try {
-    const { data } = await axios.get(`${BASE_URL}/get/${id}`, { withCredentials: true });
+    const { data } = await axios.get(`${BASE_URL}/get/${id}`, {
+      withCredentials: true,
+    });
     dispatch(invoiceSlice.actions.getInvoiceSuccess(data.invoice));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(
-      invoiceSlice.actions.getInvoiceFail(error.response?.data?.message || error.message)
+      invoiceSlice.actions.getInvoiceFail(
+        error.response?.data?.message || error.message
+      )
     );
   }
 };
 
-export const getAllInvoicesOFThisMonth = (page,limit) => async (dispatch) => {
+export const getAllInvoicesOFThisMonth = (page, limit) => async (dispatch) => {
   dispatch(invoiceSlice.actions.getAllInvoicesRequest());
   try {
-    const { data } = await axios.get(`${BASE_URL}/getAllOfThisMonth?page=${page}&limit=${limit}`, { withCredentials: true });
-    dispatch(invoiceSlice.actions.getAllInvoicesSuccess(data.invoices));
+    const { data } = await axios.get(
+      `${BASE_URL}/getAllOfThisMonth?page=${page}&limit=${limit}`,
+      { withCredentials: true }
+    );
+    dispatch(invoiceSlice.actions.getAllInvoicesSuccess(data));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(
-      invoiceSlice.actions.getAllInvoicesFail(error.response?.data?.message || error.message)
+      invoiceSlice.actions.getAllInvoicesFail(
+        error.response?.data?.message || error.message
+      )
     );
   }
 };
