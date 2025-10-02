@@ -24,23 +24,12 @@ function App() {
 
   useEffect(() => {
 
-       const now = new Date();
 
-    // Start of the month
-    const first = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    // End of the month
-    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    // Format as YYYY-MM-DD
-    const startDate = first.toISOString().split("T")[0];
-    const endDate = last.toISOString().split("T")[0];
-   
     const fetchData =  () => {
       dispatch(getUser());
       dispatch(getBusiness());
       dispatch(getAllClients());
-      dispatch(getAllInvoicesOFThisMonth(startDate,endDate));
+      dispatch(getAllInvoicesOFThisMonth(1,15));
      
     
       setLoading(false);
