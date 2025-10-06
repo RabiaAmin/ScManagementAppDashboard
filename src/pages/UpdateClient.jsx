@@ -27,6 +27,8 @@ function UpdateClient() {
   const [vatNumber, setVatNumber] = useState("");
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [fax, setFax] = useState("");
+  const [vatApplicable, setVatApplicable] = useState(false);
+  const [vatRate, setVatRate] = useState("");
 
   const dispatch = useDispatch();
   const { id } = useParams();
@@ -45,6 +47,8 @@ function UpdateClient() {
     formData.append("vatNumber", vatNumber);
     formData.append("registrationNumber", registrationNumber);
     formData.append("fax", fax);
+      formData.append("vatApplicable", vatApplicable);
+    formData.append("vatRate", vatRate);
     dispatch(updateClient( id, formData ));
   };
 
@@ -61,6 +65,8 @@ useEffect(() => {
       setVatNumber(c.vatNumber || "");
       setRegistrationNumber(c.registrationNumber || "");
       setFax(c.fax || "");
+         setVatApplicable(c.vatApplicable || false);
+        setVatRate(c.vatRate || "");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to fetch client data");
     }
@@ -182,7 +188,37 @@ useEffect(() => {
                   onChange={(e) => setFax(e.target.value)}
                 />
               </div>
+
+                 {/* Row 6 — VAT Applicable & Rate */}
+              <div className="flex items-center gap-2">
+                <input
+                  id="vatApplicable"
+                  type="checkbox"
+                  checked={vatApplicable}
+                  onChange={(e) => setVatApplicable(e.target.checked)}
+                  className="w-4 h-4 cursor-pointer accent-green-600"
+                />
+                <Label htmlFor="vatApplicable" className="cursor-pointer">
+                  VAT Applicable
+                </Label>
+              </div>
+
+              {vatApplicable && (
+                <div className="flex flex-col gap-2">
+                  <Label>VAT Rate (%)</Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter VAT rate"
+                    value={vatRate}
+                    onChange={(e) => setVatRate(e.target.value)}
+                    min="0"
+                    max="100"
+                  />
+                </div>
+              )}
             </div>
+
+            
 
             {/* Save Button */}
             <div className="grid gap-2">
