@@ -14,7 +14,7 @@ function ViewStatement() {
   const [bussiness, setBusiness] = useState({});
   const [isDownloading, setIsDownloading] = useState(false);
 
-    // ✅ Sort invoices as soon as invoice data is available
+  // ✅ Sort invoices as soon as invoice data is available
   const sortedInvoices = useMemo(() => {
     if (!invoice?.invoices) return [];
     return [...invoice.invoices].sort((a, b) => {
@@ -22,7 +22,6 @@ function ViewStatement() {
       return Number(a.invoiceNumber) - Number(b.invoiceNumber);
     });
   }, [invoice]);
-
 
   useEffect(() => {
     const fetchBusiness = async () => {
@@ -50,7 +49,11 @@ function ViewStatement() {
     if (!element) return;
 
     // Convert HTML to PNG
-    const imgData = await toJpeg(element, { cacheBust: true , pixelRatio: 1 }, { quality: 0.9 });
+    const imgData = await toJpeg(
+      element,
+      { cacheBust: true, pixelRatio: 1 },
+      { quality: 0.9 }
+    );
 
     // Create A4 PDF in mm
     const pdf = new jsPDF("p", "mm", "a4");
@@ -102,7 +105,6 @@ function ViewStatement() {
                   <Download className="w-4 h-4" /> Download PDF
                 </Button>
               )}
-              
             </div>
           </div>
 
@@ -169,23 +171,23 @@ function ViewStatement() {
                 </thead>
                 <tbody className="text-xl">
                   {Array.from({
-                    length: Math.min(20),
+                    length: Math.min(30, sortedInvoices.length),
                   }).map((_, index) => {
-                    const item = sortedInvoices?.[index];
+                    const item = sortedInvoices[index];
                     return (
                       <tr key={index} className="h-12">
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-xl border-gray-300 p-4 md:p-6 lg:p-8 text-center">
                           {item ? item.invoiceNumber : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-xl border-gray-300 p-4 md:p-6 lg:p-8 text-center">
                           {item ? item.poNumber : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-xl border-gray-300 p-4 md:p-6 lg:p-8 text-center">
                           {item
                             ? item.items.map((i) => i.description).join(",")
                             : ""}
                         </td>
-                        <td className="border text-xl border-gray-300 p-4 text-center">
+                        <td className="border text-xl border-gray-300 p-4 md:p-6 lg:p-8 text-center">
                           {item ? item.totalAmount : ""}
                         </td>
                       </tr>

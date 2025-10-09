@@ -24,7 +24,7 @@ function Dashboard() {
     navigateTo(`/invoice/${id}`);
   };
 
-  if (loading || !business || !clients ) {
+  if (loading && !business && !clients ) {
     return <Loader />;
   }
 
@@ -124,6 +124,34 @@ function Dashboard() {
                 </CardTitle>
                 <CardTitle className="text-4xl">
                   R {stats.totalInvoicesOfThisMonth}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+
+            {/* total vat Collected */}
+               <Card className="flex flex-col justify-center">
+              <CardHeader>
+                <CardTitle className="text-yellow-600">
+                  Total vatCollected <br /> <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
+                </CardTitle>
+                <CardTitle className="text-4xl">
+                  R {stats.collectedVAT}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+
+              {/* total Net revenue */}
+               <Card className="flex flex-col justify-center">
+              <CardHeader>
+                <CardTitle className="text-yellow-600">
+                  Net Revenue <br /> <span className="text-sm text-stone-500">
+                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
+                    </span> 
+                </CardTitle>
+                <CardTitle className="text-4xl">
+                  R {stats.netRevenue}
                 </CardTitle>
               </CardHeader>
             </Card>
