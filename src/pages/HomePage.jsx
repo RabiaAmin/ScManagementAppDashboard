@@ -23,6 +23,7 @@ import {
   PencilRuler,
   User,
   Users2,
+  Wallet2,
 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +35,7 @@ import Account from "./components/Account";
 import Invoices from "./components/Invoices";
 import Clients from "./components/Clients";
 import Orders from "./components/Orders";
+import Expense from "./components/Expense";
 
 function HomePage() {
   const [active, setActive] = useState("Dashboard");
@@ -75,6 +77,12 @@ function HomePage() {
             <SideBarLink
               menu="Invoices"
               icon={FolderGit}
+              active={active}
+              setActive={setActive}
+            />
+               <SideBarLink
+              menu="Expenses"
+              icon={Wallet2}
               active={active}
               setActive={setActive}
             />
@@ -162,15 +170,27 @@ function HomePage() {
                   </Link>
                   <Link
                     to="#"
-                    onClick={() => setActive("Add Project")}
+                    onClick={() => setActive("Invoices")}
                     className={`${
-                      active === "Add Project"
+                      active === "Invoices"
                         ? "text-stone-900"
                         : "text-stone-600 hover:text-stone-900"
                     } flex items-center gap-4 px-2.5`}
                   >
                     <FolderGit className="h-5 w-5" />
                     Invoices
+                  </Link>
+                   <Link
+                    to="#"
+                    onClick={() => setActive("Expense")}
+                    className={`${
+                      active === "Expense"
+                        ? "text-stone-900"
+                        : "text-stone-600 hover:text-stone-900"
+                    } flex items-center gap-4 px-2.5`}
+                  >
+                    <FolderGit className="h-5 w-5" />
+                    Expenses
                   </Link>
                     <Link
                     to="#"
@@ -232,6 +252,8 @@ function HomePage() {
                   return <Account />;
                 case "Invoices":
                   return <Invoices />;
+                case "Expenses":
+                  return <Expense/>
                 case "Clients":
                   return <Clients />;
                 case "Orders":

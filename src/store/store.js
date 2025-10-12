@@ -4,6 +4,8 @@ import forgotResetPassReducer from "./slices/forgotResetPasswordSlice"
 import businessReducer from "./slices/businessSlice"
 import clientReducer from "./slices/clientSlice"
 import invoiceReducer from "./slices/invoiceSlice"
+import expenseCategoryReducer from "./slices/expenseCategorySlice"
+import expense from "./slices/expenseSlice"
 
 export const store = configureStore({
     reducer:{
@@ -11,7 +13,9 @@ export const store = configureStore({
         forgotPassword: forgotResetPassReducer,
         business: businessReducer,
         client: clientReducer,
-        invoice: invoiceReducer
+        invoice: invoiceReducer,
+        expenseCategory: expenseCategoryReducer,
+        expense: expense
         
     }
 })
