@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_EXPENSE;
 
 const expenseSlice = createSlice({
   name: "expense",
   initialState: {
-    expenses: [],
+    Expenses: [],
     loading: false,
     error: null,
     message: null,
@@ -28,12 +29,12 @@ const expenseSlice = createSlice({
     },
 
     getAllExpenseRequest(state) {
-      state.expenses = [];
+      state.Expenses = [];
       state.loading = true;
       state.error = null;
     },
     getAllExpenseSuccess(state, action) {
-      state.expenses = action.payload;
+      state.Expenses = action.payload;
       state.loading = false;
       state.error = null;
     },
@@ -41,7 +42,7 @@ const expenseSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-      deleteExpenseRequest(state) {
+    deleteExpenseRequest(state) {
       state.loading = true;
       state.error = null;
       state.message = null;
@@ -49,6 +50,9 @@ const expenseSlice = createSlice({
     deleteExpenseSuccess(state, action) {
       state.loading = false;
       state.error = null;
+      state.Expenses = state.Expenses.filter(
+        (exp) => exp._id !== action.payload
+      );
       state.message = action.payload;
     },
     deleteExpenseFail(state, action) {
@@ -98,14 +102,14 @@ export const addExpense = (formData)=> async (dispatch)=>{
 
 }
 
-export const getAllExpenses = (start,end) => async (dispatch) => {
+export const getAllExpenses = (startDate,endDate) => async (dispatch) => {
   dispatch(expenseSlice.actions.getAllExpenseRequest());
   try {
     const { data } = await axios.get(
-      `${BASE_URL}/getAll?start=${start}&end=${end}`,
+      `${BASE_URL}/getAll?startDate=${startDate}&endDate=${endDate}`,
       { withCredentials: true }
     );
-    dispatch(expenseSlice.actions.getAllExpenseSuccess(data.expenses));
+    dispatch(expenseSlice.actions.getAllExpenseSuccess(data.Expenses));
     dispatch(expenseSlice.actions.clearAllErrors());
   } catch (error) {
     dispatch(expenseSlice.actions.getAllExpenseFail(error?.response?.data.message));
@@ -145,7 +149,7 @@ export const clearAllExpenseErrors = () => (dispatch) => {
   dispatch(expenseSlice.actions.clearAllErrors());
 };
 
-export const resetExpenseError = () => (dispatch) => {
+export const resetExpenseStatus = () => (dispatch) => {
   dispatch(expenseSlice.actions.resetExpenseSatus());
 };
 

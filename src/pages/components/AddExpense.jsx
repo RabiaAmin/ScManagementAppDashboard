@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { addExpense, resetExpenseError, clearAllExpenseErrors } from "@/store/slices/expenseSlice";
+import { addExpense, resetExpenseStatus, clearAllExpenseErrors } from "@/store/slices/expenseSlice";
 import { fetchCategories } from "@/store/slices/expenseCategorySlice";
 import Loader from "@/components/Loader";
 
@@ -66,7 +66,7 @@ function AddExpense() {
     }
     if (message) {
       toast.success(message || "Expense added successfully!");
-      dispatch(resetExpenseError());
+      dispatch(resetExpenseStatus());
       // Reset form
       setVendorName("");
       setInvoiceNo("");

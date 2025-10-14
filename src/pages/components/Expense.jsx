@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import AllExpense from './AllExpense'
 import AddExpense from './AddExpense'
-import UpdateExpense from './UpdateExpense'
+
 import ManageExpenseCategory from './ManageExpenseCategory'
+import ManageExpense from './ManageExpense'
 
 function Expense() {
     const [selectedComponent , setSelectedComponent] = useState("All")
@@ -20,8 +21,8 @@ function Expense() {
           <Link to="#"  className={selectedComponent === "Add"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Add")}}>
           Add Expense
           </Link>
-          <Link to="#"  className={selectedComponent === "Update"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Update")}}>
-           Update Expense
+          <Link to="#"  className={selectedComponent === "Update"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("ManageExpense")}}>
+           Manage Expenses
           </Link>
           <Link to="#"  className={selectedComponent === "Manage"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Manage")}}>
            Manage Expense Categories
@@ -37,8 +38,8 @@ function Expense() {
             return <AllExpense/>
           case "Add":
             return <AddExpense/>
-          case "Update":
-            return <UpdateExpense/>
+          case "ManageExpense":
+            return <ManageExpense/>
         case "Manage":
             return <ManageExpenseCategory/>
          
