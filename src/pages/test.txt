@@ -1,0 +1,149 @@
+import React, { useRef } from "react";
+import { useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Loader2 } from "lucide-react";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
+import { usePdfDownloader } from "@/hooks/useDownloadPdf.js";
+
+function AllExpense() {
+  const { loading, Expenses } = useSelector((state) => state.expense);
+  const { isDownloading, handlePdfDownload } = usePdfDownloader();
+  const printRef = useRef();
+
+  return (
+    <div className="p-6">
+      {/* --- Top Controls --- */}
+      <div className="flex flex-wrap items-end gap-3 mb-6 justify-end">
+        {isDownloading ? (
+          <SpecialLoadingBtn />
+        ) : (
+          <Button
+            disabled={isDownloading}
+            onClick={() => handlePdfDownload(printRef, `Expenses_Report`)}
+          >
+            Download PDF
+          </Button>
+        )}
+      </div>
+
+      {/* --- Printable Expense Report --- */}
+      <Card
+        ref={printRef}
+        className="shadow-md border border-gray-300 bg-white p-6 rounded-2xl max-w-6xl mx-auto"
+      >
+        {/* --- Header Section --- */}
+        <CardHeader className="text-center pb-4 border-b border-gray-200">
+          <CardTitle className="text-2xl font-bold text-gray-800 uppercase tracking-wide">
+            Company Expense Report
+          </CardTitle>
+          <p className="text-sm text-gray-500 mt-2">
+            Generated on: {new Date().toLocaleDateString()}
+          </p>
+        </CardHeader>
+
+        {/* --- Table Section --- */}
+        <CardContent className="pt-6">
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="animate-spin h-6 w-6 text-primary" />
+            </div>
+          ) : Expenses?.length === 0 ? (
+            <p className="text-center text-gray-500 py-6">
+              No expenses found for this period.
+            </p>
+          ) : (
+            <div className="">
+              <Table className="min-w-full border-collapse">
+                <TableHeader>
+                  <TableRow className="bg-gray-100 text-gray-700">
+                    <TableHead className="text-left font-semibold p-3 border">
+                      Date
+                    </TableHead>
+                    <TableHead className="text-left font-semibold p-3 border">
+                      Company Name
+                    </TableHead>
+                    <TableHead className="text-left font-semibold p-3 border">
+                      Invoice No
+                    </TableHead>
+                    <TableHead className="text-left font-semibold p-3 border">
+                      Payment Method
+                    </TableHead>
+                    <TableHead className="text-right font-semibold p-3 border">
+                      Amount (R)
+                    </TableHead>
+                    <TableHead className="text-right font-semibold p-3 border">
+                      VAT (R)
+                    </TableHead>
+                    <TableHead className="text-right font-semibold p-3 border">
+                      Total (R)
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {Expenses.map((expense) => (
+                    <TableRow
+                      key={expense._id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <TableCell className="border p-3 text-sm text-gray-600">
+                        {new Date(expense.date).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="border p-3 text-sm text-gray-600">
+                        {expense.vendorName}
+                      </TableCell>
+                      <TableCell className="border p-3 text-sm text-gray-600">
+                        {expense.invoiceNo}
+                      </TableCell>
+                      <TableCell className="border p-3 text-sm text-gray-600">
+                        {expense.paymentMethod}
+                      </TableCell>
+                      <TableCell className="border p-3 text-sm text-gray-600 text-right">
+                        R{expense.amount.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="border p-3 text-sm text-gray-600 text-right">
+                        R{expense.vatAmount.toFixed(2)}
+                      </TableCell>
+                      <TableCell className="border p-3 text-sm text-gray-800 font-medium text-right">
+                        R{expense.totalAmount.toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+
+        {/* --- Footer (Totals) --- */}
+        {!loading && Expenses?.length > 0 && (
+          <div className="mt-6 border-t border-gray-200 pt-4 text-right">
+            <p className="text-gray-700 text-sm">
+              <span className="font-semibold">Total Entries:</span>{" "}
+              {Expenses.length}
+            </p>
+            <p className="text-gray-700 text-sm">
+              <span className="font-semibold">Grand Total:</span>{" "}
+              R
+              {Expenses.reduce(
+                (sum, expense) => sum + expense.totalAmount,
+                0
+              ).toFixed(2)}
+            </p>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
+}
+
+export default AllExpense;

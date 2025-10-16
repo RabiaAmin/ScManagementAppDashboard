@@ -1,22 +1,23 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import AllExpense from './AllExpense'
+
 import AddExpense from './AddExpense'
 
 import ManageExpenseCategory from './ManageExpenseCategory'
 import ManageExpense from './ManageExpense'
+import ExpenseReport from './ExpenseReport'
 
 function Expense() {
-    const [selectedComponent , setSelectedComponent] = useState("All")
+    const [selectedComponent , setSelectedComponent] = useState("report")
   return (
     <main className='flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-4'>
-       <div className='mx-auto grid w-full max-w-6xl gap-2'>
+       <div className='mx-auto grid w-full h-full max-w-6xl gap-2'>
         <h1 className='text-2xl font-semibold'>Expense Management</h1>
        </div>
-       <div className='mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[200px_1fr]' >
+       <div className='mx-auto grid w-full h-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[200px_1fr]' >
         <nav className='grid gap-4 text-sm '>
-           <Link to="#"  className={selectedComponent === "All"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("All")}}>
-           All Expenses
+           <Link to="#"  className={selectedComponent === "report"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("report")}}>
+           Expense Report
           </Link >
           <Link to="#"  className={selectedComponent === "Add"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Add")}}>
           Add Expense
@@ -34,8 +35,8 @@ function Expense() {
           {
       (()=>{
         switch (selectedComponent) {
-          case "All":
-            return <AllExpense/>
+          case "report":
+            return <ExpenseReport/>
           case "Add":
             return <AddExpense/>
           case "ManageExpense":
