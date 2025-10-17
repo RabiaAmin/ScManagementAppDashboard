@@ -1,5 +1,5 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, {  useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Card,
   CardContent,
@@ -10,19 +10,57 @@ import {
 } from "@/components/ui/card";
 
 import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Loader from "../../components/Loader";
+import { getAllInvoicesOFThisMonth } from "@/store/slices/invoiceSlice";
+import { Input } from "@/components/ui/input";
+import SpecialLoadingBtn from "./SpecialLoadingBtn";
+
 
 function Dashboard() {
   const { business } = useSelector((state) => state.business);
   const { clients } = useSelector((state) => state.client);
   const { loading,stats,totalRecords} = useSelector((state) => state.invoice);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isSearch, setIsSearch] = useState(true);
+  const dispatch = useDispatch();
+  const [loadingSearch, setLoadingSearch] = useState(false);
 
 
-  const navigateTo = useNavigate();
-  const handleViewInvoice = (id) => {
-    navigateTo(`/invoice/${id}`);
-  };
+useEffect(() => {
+  const now = new Date();
+
+  // Start of last month (e.g., 2025-09-01)
+const startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+// End of last month (e.g., 2025-09-30)
+const endDate = new Date(now.getFullYear(), now.getMonth(), 0); // 0th day of current month = last day of previous month
+
+  const formatLocalDate = (d) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const start = formatLocalDate(startDate);
+const end = formatLocalDate(endDate);
+
+  setStartDate(start);
+  setEndDate(end);
+
+  fetchInvoices(startDate, endDate);
+}, []);
+
+
+const fetchInvoices = (startDate, endDate) => {
+  const page = 1; // or your current page state if you have pagination
+  const limit = 40; // or whatever limit you use
+  dispatch(getAllInvoicesOFThisMonth(page, limit, startDate, endDate));
+};
+
+
 
   if (loading && !business && !clients ) {
     return <Loader />;
@@ -30,6 +68,29 @@ function Dashboard() {
 
   return (
     <div className="flex flex-col p-2  ">
+      <div className="w-full mb-4 ">
+         <div className="flex items-end gap-2 my-4 justify-end">
+        <div>
+            <label className="text-stone-400">Start Date</label>
+           <Input type="date"  className="bg-stone-100" value={startDate} onChange={(e)=>{setStartDate(e.target.value); setIsSearch(false) }}  />
+        </div>
+        <div>
+            <label className="text-stone-400">End Date</label>
+
+           <Input type="date" className="bg-stone-100" value={endDate} onChange={(e)=>setEndDate(e.target.value)} />
+        </div>
+       <div>
+
+         {
+         loadingSearch ? <SpecialLoadingBtn/> :
+        <Button  disabled={isSearch}   onClick={()=>{fetchInvoices(startDate,endDate);setLoadingSearch(true)}} >
+         Search 
+       </Button>
+         } 
+
+        </div>
+
+        </div></div>
       <main className=" grid flex-1 items-start gap-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-2">
         <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 xl:grid-cols-4">
@@ -157,68 +218,7 @@ function Dashboard() {
             </Card>
           </div>
 
-          {/* Upcoming Due Dates (current month) */}
-          <Card className="flex flex-col">
-            <CardHeader>
-              <CardTitle className="text-blue-600">
-                Upcoming Due Dates <span className="text-sm text-stone-500">
-                    ({new Date(stats.startDate).toLocaleDateString()} - {new Date(stats.endDate).toLocaleDateString()})
-                    </span> 
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {stats.upcomingDueDates && stats.upcomingDueDates.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm border border-gray-200 rounded-lg">
-                    <thead>
-                      <tr className="bg-gray-100 text-left">
-                        <th className="px-3 py-2 border-b">Invoice #</th>
-                        <th className="px-3 py-2 border-b">PO Number</th>
-                        <th className="px-3 py-2 border-b">Due Date</th>
-                        <th className="px-3 py-2 border-b">Amount</th>
-                        <th className="px-3 py-2 border-b">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {stats.upcomingDueDates.map((inv) => (
-                        <tr
-                          key={inv._id}
-                          className="hover:bg-gray-50 cursor-pointer"
-                          onClick={() => handleViewInvoice(inv._id)}
-                        >
-                          <td className="px-3 py-2 border-b">
-                            {inv.invoiceNumber}
-                          </td>
-                          <td className="px-3 py-2 border-b">{inv.poNumber}</td>
-                          <td className="px-3 py-2 border-b">
-                            {new Date(inv.date).toLocaleDateString()}
-                          </td>
-                          <td className="px-3 py-2 border-b">
-                            R {inv.totalAmount}
-                          </td>
-                          <td className="px-3 py-2 border-b">
-                            <span
-                              className={`px-2 py-1 rounded text-xs font-medium ${
-                                inv.status === "Paid"
-                                  ? "bg-green-100 text-green-600"
-                                  : inv.status === "Pending"
-                                  ? "bg-yellow-100 text-yellow-600"
-                                  : "bg-blue-100 text-blue-600"
-                              }`}
-                            >
-                              {inv.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <p className="text-muted-foreground">No upcoming invoices</p>
-              )}
-            </CardContent>
-          </Card>
+       
         </div>
       </main>
     </div>

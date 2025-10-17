@@ -26,12 +26,11 @@ function App() {
 
   useEffect(() => {
 
-
     const fetchData =  () => {
       dispatch(getUser());
       dispatch(getBusiness());
       dispatch(getAllClients());
-      dispatch(getAllInvoicesOFThisMonth(1,10));
+      dispatch(getAllInvoicesOFThisMonth(1,40));
      
     
       setLoading(false);

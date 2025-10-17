@@ -31,7 +31,7 @@ function AllInvoices() {
   const { invoices, loading , totalPages , totalRecords } = useSelector((state) => state.invoice);
   
    const [page, setPage] = useState(1);
-  const [limit] = useState(10); // invoices per page
+  const [limit] = useState(40); // invoices per page
 
   const [searchTerm, setSearchTerm] = useState("");
 

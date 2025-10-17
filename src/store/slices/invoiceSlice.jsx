@@ -198,11 +198,14 @@ export const getInvoice = (id) => async (dispatch) => {
   }
 };
 
-export const getAllInvoicesOFThisMonth = (page, limit) => async (dispatch) => {
+export const getAllInvoicesOFThisMonth = (page, limit,startDate,endDate) => async (dispatch) => {
   dispatch(invoiceSlice.actions.getAllInvoicesRequest());
   try {
+        const queryParams = new URLSearchParams({ page, limit });
+    if (startDate) queryParams.append("startDate", startDate);
+    if (endDate) queryParams.append("endDate", endDate);
     const { data } = await axios.get(
-      `${BASE_URL}/getAllOfThisMonth?page=${page}&limit=${limit}`,
+      `${BASE_URL}/getAllOfThisMonth?${queryParams.toString()}`,
       { withCredentials: true }
     );
     dispatch(invoiceSlice.actions.getAllInvoicesSuccess(data));
