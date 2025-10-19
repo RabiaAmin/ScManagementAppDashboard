@@ -11,13 +11,13 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import jsPDF from "jspdf";
+import Loader from "@/components/Loader";
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE_VIEWINVOICE;
 
 function ViewInvoice() {
   const { id } = useParams();
-  const [businessId, setBusinessId] = useState("");
-  const [clientId, setClientId] = useState("");
   const [bussiness, setBusiness] = useState({});
+  const [bankDetails, setBankDetails] = useState({});
   const [client, setClient] = useState({});
   const [invoice, setInvoice] = useState({
     items: [],
@@ -35,7 +35,11 @@ function ViewInvoice() {
     if (!element) return;
 
     // Convert HTML to PNG
-    const imgData = await toJpeg(element, { cacheBust: true , pixelRatio: 1 }, { quality: 0.9 });
+    const imgData = await toJpeg(
+      element,
+      { cacheBust: true, pixelRatio: 1 },
+      { quality: 0.9 }
+    );
 
     // Create A4 PDF in mm
     const pdf = new jsPDF("p", "mm", "a4");
@@ -70,11 +74,12 @@ function ViewInvoice() {
         const res = await axios.get(`${BASE_URL}/${id}`, {
           withCredentials: true,
         });
-        const inv = res.data.invoice;
-        setInvoice(inv);
-        setBusinessId(inv.fromBusiness);
-        setClientId(inv.toClient);
-       
+        const inv = res.data;
+        console.log("Fetched Invoice:", inv);
+        setInvoice(inv.invoice);
+        setBusiness(inv.invoice.fromBusiness);
+        setClient(inv.invoice.toClient);
+        setBankDetails(inv.bankAccount);
       } catch (err) {
         toast.error(
           err.response?.data?.message || "Failed to fetch invoice data"
@@ -84,43 +89,9 @@ function ViewInvoice() {
     fetchInvoice();
   }, [id]);
 
-  useEffect(() => {
-    const fetchBusiness = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL_BUSINESS_VIEW}`,
-          { withCredentials: true }
-        );
-        setBusiness(res.data.business);
-      } catch (err) {
-        toast.error(
-          err.response?.data?.message || "Failed to fetch business data"
-        );
-      }
-    };
-    if (businessId) {
-      fetchBusiness();
-    }
-  }, [businessId]);
-
-  useEffect(() => {
-    const fetchClient = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL_CLIENT}/get/${clientId}`,
-          { withCredentials: true }
-        );
-        setClient(res.data.client);
-      } catch (err) {
-        toast.error(
-          err.response?.data?.message || "Failed to fetch client data"
-        );
-      }
-    };
-    if (clientId) {
-      fetchClient();
-    }
-  }, [clientId]);
+  if (!invoice && !bankDetails && !client && !bussiness) {
+    return <Loader />;
+  }
 
   return (
     <div className="flex flex-col p-4 w-full min-h-screen">
@@ -133,23 +104,23 @@ function ViewInvoice() {
             </h1>
 
             <div className="flex gap-4">
-              {isDownloading ? <SpecialLoadingBtn/> :
-              
-              <Button
-                onClick={handlePdfDownload}
-                className="flex items-center gap-2 cursor-pointer"
-              >
-                <Download className="w-4 h-4" /> Download PDF
-              </Button>
-              }
-              
+              {isDownloading ? (
+                <SpecialLoadingBtn />
+              ) : (
+                <Button
+                  onClick={handlePdfDownload}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Download className="w-4 h-4" /> Download PDF
+                </Button>
+              )}
             </div>
           </div>
 
           {/* Invoice Content */}
           <Card
             ref={printRef}
-            className="shadow-md p-8 h-full min-h-screen flex flex-col"
+            className="border-0 shadow-none rounded-none  p-8 h-full min-h-screen flex flex-col"
           >
             <CardHeader>
               <CardTitle className="text-6xl font-bold">TAX INVOICE</CardTitle>
@@ -176,7 +147,8 @@ function ViewInvoice() {
                     <p>Reg No: {client.registrationNumber}</p>
                     <p>{client.address}</p>
                     <p>
-                      tel: {client.telphone} phone:{client.phone} Fax: {client.fax}
+                      tel: {client.telphone} phone:{client.phone} Fax:{" "}
+                      {client.fax}
                     </p>
                   </div>
                 </div>
@@ -246,10 +218,13 @@ function ViewInvoice() {
                 </tbody>
 
                 {/* Totals Section */}
-                <tfoot >
+                <tfoot>
                   <tr>
+                    <td colSpan={2} className="px-4 ">
+                      <p className="text-2xl font-bold">Bank Details:</p>
+                    </td>
                     <td
-                      colSpan={3}
+                      colSpan={1}
                       className="border text-2xl border-gray-300 p-4 text-right font-bold"
                     >
                       Subtotal
@@ -259,8 +234,17 @@ function ViewInvoice() {
                     </td>
                   </tr>
                   <tr>
+                    <td colSpan={2} className="pl-4 text-xl pb-4">
+                     <strong>Bank:</strong>   {bankDetails.bankName}
+                      <br />
+                      <strong>Account Name:</strong>  {bankDetails.accountHolderName}
+                      <br />
+                     <strong> Account Number:</strong>  {bankDetails.accountNumber}
+                      <br />
+                     <strong> Branch Code:</strong>  {bankDetails.branchCode}
+                    </td>
                     <td
-                      colSpan={3}
+                      colSpan={1}
                       className="border  text-2xl border-gray-300 p-4 text-right font-bold"
                     >
                       Tax
@@ -270,8 +254,12 @@ function ViewInvoice() {
                     </td>
                   </tr>
                   <tr className="bg-gray-100  font-bold text-2xl">
+                    <td colSpan={2} className="text-xl font-normal px-4 py-8">
+                      <strong>Signed:</strong> ___________________     
+                      <strong>Date:</strong>____________________ 
+                    </td>
                     <td
-                      colSpan={3}
+                      colSpan={1}
                       className="border font-bold   border-gray-300 p-4 text-right"
                     >
                       Total Amount
