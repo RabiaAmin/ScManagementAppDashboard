@@ -4,6 +4,7 @@ import Profile from './Profile'
 import UpdateProfile from './UpdateProfile'
 import UpdatePassword from './UpdatePassword'
 import Business from './Business'
+import BankAccount from './BankAccount'
 
 function Account() {
   const [selectedComponent , setSelectedComponent] = useState("Profile")
@@ -30,6 +31,9 @@ function Account() {
           <Link to="#"   className={selectedComponent=== "Business"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Business")}}>
            Business
           </Link>
+           <Link to="#"   className={selectedComponent=== "Bank Acounts"?"font-semibold text-stone-600 border rounded-2xl border-stone-300 py-2 px-4":"text-blue-500"} onClick={()=>{setSelectedComponent("Bank Acounts")}}>
+           Bank Acounts
+          </Link>
 
          
         </nav>
@@ -45,6 +49,8 @@ function Account() {
             return <UpdatePassword/>
           case "Business":
             return <Business/>
+          case "Bank Acounts":
+               return <BankAccount/>
           default:
             return null; 
         }

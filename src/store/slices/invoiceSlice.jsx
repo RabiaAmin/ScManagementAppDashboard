@@ -31,7 +31,7 @@ const invoiceSlice = createSlice({
       state.loading = false;
       state.isCreated = true;
       state.invoices.push(action.payload);
-      state.message = "Invoice created successfully!";
+      state.message = action.payload;
     },
     createInvoiceFail(state, action) {
       state.loading = false;
@@ -51,7 +51,7 @@ const invoiceSlice = createSlice({
       state.invoices = state.invoices.map((invoice) =>
         invoice._id === action.payload._id ? action.payload : invoice
       );
-      state.message = "Invoice updated successfully!";
+      state.message = action.payload;
     },
     updateInvoiceFail(state, action) {
       state.loading = false;
@@ -137,7 +137,7 @@ export const createInvoice = (invoiceData) => async (dispatch) => {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
-    dispatch(invoiceSlice.actions.createInvoiceSuccess(data.invoice));
+    dispatch(invoiceSlice.actions.createInvoiceSuccess(data.message));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(

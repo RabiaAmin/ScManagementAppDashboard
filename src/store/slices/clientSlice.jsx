@@ -25,7 +25,7 @@ const clientSlice = createSlice({
       state.loading = false;
       state.isCreated = true;
       state.clients.push(action.payload);
-      state.message = "Client added successfully!";
+      state.message = action.payload;
     },
     addClientFail(state, action) {
       state.loading = false;
@@ -46,7 +46,7 @@ const clientSlice = createSlice({
       state.clients = state.clients.map((client) =>
         client._id === action.payload._id ? action.payload : client
       );
-      state.message = "Client updated successfully!";
+      state.message = action.payload;
     },
     updateClientFail(state, action) {
       state.loading = false;
@@ -66,7 +66,7 @@ const clientSlice = createSlice({
       state.clients = state.clients.filter(
         (client) => client._id !== action.payload
       );
-      state.message = "Client deleted successfully!";
+      state.message = action.payload;
     },
     deleteClientFail(state, action) {
       state.loading = false;
@@ -108,7 +108,7 @@ const clientSlice = createSlice({
     resetClientStatus(state) {
       state.isCreated = false;
       state.isUpdated = false;
-      state.isDeleted = false;
+      state.loading = false;
       state.message = null;
       state.error = null;
     },
@@ -129,7 +129,8 @@ export const addClient = (clientData) => async (dispatch) => {
       clientData,
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
-    dispatch(clientSlice.actions.addClientSuccess(data.client));
+   
+    dispatch(clientSlice.actions.addClientSuccess(data.message));
     dispatch(clientSlice.actions.clearClientErrors());
   } catch (error) {
     dispatch(
@@ -146,7 +147,7 @@ export const updateClient = (id, clientData) => async (dispatch) => {
       clientData,
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
-    dispatch(clientSlice.actions.updateClientSuccess(data.client));
+    dispatch(clientSlice.actions.updateClientSuccess(data.message));
     dispatch(clientSlice.actions.clearClientErrors());
   } catch (error) {
     dispatch(

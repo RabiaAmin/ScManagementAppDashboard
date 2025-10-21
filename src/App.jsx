@@ -19,6 +19,8 @@ import UpdateInvoice from './pages/UpdateInvoice';
 import ViewStatement from './pages/ViewStatement';
 import UpdateExpense from './pages/UpdateExpense';
 import PrintableExpenseReport from './pages/components/PrintableExpenseReport';
+import AddAccount from './pages/components/AddAccount';
+
 function App() {
  
     const dispatch = useDispatch();
@@ -31,6 +33,7 @@ function App() {
       dispatch(getBusiness());
       dispatch(getAllClients());
       dispatch(getAllInvoicesOFThisMonth(1,40));
+ 
      
     
       setLoading(false);
@@ -57,6 +60,7 @@ function App() {
           <Route path="/expense/update/:id" element={<UpdateExpense/>} />
           <Route path="/statements"element={<ViewStatement/>}  />
           <Route path="/expense/report" element={<PrintableExpenseReport/>}  />
+          <Route path="/addAccount" element={<AddAccount/>} />
 
           <Route path="*"element={<NotFoundPage/>}  />
 

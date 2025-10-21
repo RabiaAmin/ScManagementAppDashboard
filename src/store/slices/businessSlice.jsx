@@ -12,6 +12,7 @@ const businessSlice = createSlice({
     error: null,
     message: null,
   },
+  
   reducers: {
     // Create business (no creation flag now)
     createBusinessRequest(state) {
@@ -21,7 +22,7 @@ const businessSlice = createSlice({
     createBusinessSuccess(state, action) {
       state.loading = false;
       state.business = action.payload;
-      state.message = "Business saved successfully!";
+      state.message = action.payload;
     },
     createBusinessFail(state, action) {
       state.loading = false;
@@ -38,7 +39,7 @@ const businessSlice = createSlice({
       state.loading = false;
       state.isUpdated = true;
       state.business = action.payload;
-      state.message = "Business updated successfully!";
+      state.message = action.payload;
     },
     updateBusinessFail(state, action) {
       state.loading = false;
@@ -85,7 +86,7 @@ export const createBusiness = (businessData) => async (dispatch) => {
       businessData,
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
-    dispatch(businessSlice.actions.createBusinessSuccess(data.business));
+    dispatch(businessSlice.actions.createBusinessSuccess(data.message));
     dispatch(businessSlice.actions.clearBusinessErrors());
   } catch (error) {
     dispatch(
@@ -102,7 +103,7 @@ export const updateBusiness = (businessData) => async (dispatch) => {
       businessData,
       { withCredentials: true, headers: { "Content-Type": "application/json" } }
     );
-    dispatch(businessSlice.actions.updateBusinessSuccess(data.business));
+    dispatch(businessSlice.actions.updateBusinessSuccess(data.message));
     dispatch(businessSlice.actions.clearBusinessErrors());
   } catch (error) {
     dispatch(
