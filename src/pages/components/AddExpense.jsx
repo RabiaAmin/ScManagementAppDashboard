@@ -51,9 +51,12 @@ function AddExpense() {
 
   useEffect(() => {
     const amt = parseFloat(amount) || 0;
-    const vat = isVatApplicable ? (parseFloat(vatAmount) || 0) : 0;
+   
+    const vat = isVatApplicable ? amt * 0.15 : 0;
+    setVatAmount(vat.toFixed(2));
     setTotalAmount((amt + vat).toFixed(2));
-  }, [amount, vatAmount, isVatApplicable]);
+    
+  }, [amount, isVatApplicable]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -187,6 +190,7 @@ function AddExpense() {
               <Label>VAT Amount</Label>
               <Input
                 type="number"
+                readonly
                 placeholder="0"
                 value={vatAmount}
                 onChange={(e) => setVatAmount(e.target.value)}

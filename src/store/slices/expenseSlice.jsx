@@ -8,6 +8,7 @@ const expenseSlice = createSlice({
   name: "expense",
   initialState: {
     Expenses: [],
+    ExpenseStats: {},
     loading: false,
     error: null,
     message: null,
@@ -34,7 +35,8 @@ const expenseSlice = createSlice({
       state.error = null;
     },
     getAllExpenseSuccess(state, action) {
-      state.Expenses = action.payload;
+      state.Expenses = action.payload.Expenses;
+      state.ExpenseStats = action.payload.expenseStats;
       state.loading = false;
       state.error = null;
     },
@@ -109,7 +111,7 @@ export const getAllExpenses = (startDate,endDate) => async (dispatch) => {
       `${BASE_URL}/getAll?startDate=${startDate}&endDate=${endDate}`,
       { withCredentials: true }
     );
-    dispatch(expenseSlice.actions.getAllExpenseSuccess(data.Expenses));
+    dispatch(expenseSlice.actions.getAllExpenseSuccess(data));
     dispatch(expenseSlice.actions.clearAllErrors());
   } catch (error) {
     dispatch(expenseSlice.actions.getAllExpenseFail(error?.response?.data.message));

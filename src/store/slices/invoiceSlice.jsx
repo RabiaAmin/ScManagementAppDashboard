@@ -137,6 +137,7 @@ export const createInvoice = (invoiceData) => async (dispatch) => {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
+    console.log("create invoice message error debug:",data);
     dispatch(invoiceSlice.actions.createInvoiceSuccess(data.message));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {

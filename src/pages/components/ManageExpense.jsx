@@ -31,6 +31,7 @@ function ManageExpense() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isSearch, setIsSearch] = useState(true);
+  const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const dispatch = useDispatch();
   const { loading,  Expenses } = useSelector(
@@ -65,7 +66,13 @@ function ManageExpense() {
   return (
     <div className="p-6">
       {/* --- Filter Section --- */}
-      <div className="flex flex-wrap items-end gap-3 mb-6 justify-end">
+      <div className="flex flex-wrap justify-between items-end mb-4">
+        <div>
+          <Link to={"/expense/report"} >
+          <Button>Generate Report</Button>
+          </Link>
+        </div>
+        <div  className="flex flex-wrap gap-3 items-end justify-end">
         <div>
           <label className="text-stone-400 text-sm">Start Date</label>
           <Input
@@ -89,19 +96,25 @@ function ManageExpense() {
           />
         </div>
         <div>
-          {loading ? (
+          {isSearchLoading  ? (
             <SpecialLoadingBtn />
           ) : (
             <Button
               disabled={isSearch}
               onClick={() => {
-                setIsSearch(true);
+                setIsSearchLoading(true);
                 dispatch(getAllExpenses(startDate, endDate));
+                setTimeout(() => {
+                  setIsSearchLoading(false);
+                  setIsSearch(true);
+                }, 1000);
+                 
               }}
             >
               Search
             </Button>
           )}
+        </div>
         </div>
       </div>
 

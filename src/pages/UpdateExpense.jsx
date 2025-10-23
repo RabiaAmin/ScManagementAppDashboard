@@ -27,7 +27,7 @@ import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
 function UpdateExpense() {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { loading, error, message, Expenses } = useSelector(
+  const { loading, error, message } = useSelector(
     (state) => state.expense
   );
 
@@ -87,9 +87,10 @@ function UpdateExpense() {
 
      useEffect(() => {
         const amt = parseFloat(amount) || 0;
-        const vat = isVatApplicable ? (parseFloat(vatAmount) || 0) : 0;
+        const vat = isVatApplicable ? amt *0.15  : 0;
+        setVatAmount(vat.toFixed(2));
         setTotalAmount((amt + vat).toFixed(2));
-      }, [amount, vatAmount, isVatApplicable]);
+      }, [amount, isVatApplicable]);
 
   useEffect(() => {
     if (error) {
@@ -213,6 +214,7 @@ function UpdateExpense() {
               <Input
                 type="number"
                 placeholder="0"
+                readonly
                 value={vatAmount}
                 onChange={(e) => setVatAmount(e.target.value)}
                 className="bg-stone-50 border-stone-300"

@@ -48,8 +48,8 @@ const fetchInvoices = (page, limit) => {
     (a, b) => new Date(b.date) - new Date(a.date)
   );
 
-  const filteredInvoices = sortedInvoices.filter((invoice) =>
-    invoice.poNumber.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredInvoices = (sortedInvoices || []).filter((invoice) =>
+    invoice?.poNumber?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleDelete = (id) => {

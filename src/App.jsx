@@ -9,7 +9,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import { useDispatch } from 'react-redux';
 import { getUser } from './store/slices/userSlice';
-import {getAllInvoicesOFThisMonth} from "./store/slices/invoiceSlice"
+import {getAllInvoicesOFThisMonth} from "./store/slices/invoiceSlice";
+import {getAllExpenses} from './store/slices/expenseSlice';
+
 import {getBusiness} from './store/slices/businessSlice';
 import {getAllClients} from './store/slices/clientSlice';
 import UpdateClient from './pages/UpdateClient';
@@ -29,11 +31,18 @@ function App() {
   useEffect(() => {
 
     const fetchData =  () => {
+
+       const now = new Date();
+    const first = new Date(now.getFullYear(), now.getMonth(), 1);
+    const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const start = first.toISOString().split("T")[0];
+    const end = last.toISOString().split("T")[0];
       dispatch(getUser());
       dispatch(getBusiness());
       dispatch(getAllClients());
       dispatch(getAllInvoicesOFThisMonth(1,40));
- 
+      dispatch(getAllExpenses(start , end));
      
     
       setLoading(false);
