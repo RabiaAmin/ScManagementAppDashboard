@@ -81,7 +81,7 @@ function HomePage() {
               setActive={setActive}
             />
                <SideBarLink
-              menu="Expenses"
+              menu="Expense"
               icon={Wallet2}
               active={active}
               setActive={setActive}
@@ -152,18 +152,7 @@ function HomePage() {
                     Dashboard
                   </Link>
                  
-                  <Link
-                    to="#"
-                    onClick={() => setActive("Invoices")}
-                    className={`${
-                      active === "Invoices"
-                        ? "text-stone-900"
-                        : "text-stone-600 hover:text-stone-900"
-                    } flex items-center gap-4 px-2.5`}
-                  >
-                    <FolderGit className="h-5 w-5" />
-                    Invoices
-                  </Link>
+                 
                    <Link
                     to="#"
                     onClick={() => setActive("Expense")}
@@ -174,7 +163,7 @@ function HomePage() {
                     } flex items-center gap-4 px-2.5`}
                   >
                     <FolderGit className="h-5 w-5" />
-                    Expenses
+                    Expense
                   </Link>
                     <Link
                     to="#"
@@ -236,7 +225,7 @@ function HomePage() {
                   return <Account />;
                 case "Invoices":
                   return <Invoices />;
-                case "Expenses":
+                case "Expense":
                   return <Expense/>
                 case "Clients":
                   return <Clients />;

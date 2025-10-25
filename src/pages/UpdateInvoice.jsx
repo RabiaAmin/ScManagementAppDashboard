@@ -44,6 +44,7 @@ function UpdateInvoice() {
   const [tax, setTax] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [status, setStatus] = useState("Pending");
+  const [isTaxIncluded, setIsTaxIncluded] = useState(true);
 
   useEffect(() => {
   dispatch(getInvoice(id));
@@ -70,13 +71,16 @@ function UpdateInvoice() {
           : [{ quantity: 1, description: "", unitPrice: 0, amount: 0 }]
       );
       setSubTotal(invoice.subTotal || 0);
+      if(invoice.tax === 0){
+        setIsTaxIncluded(false);
+      }
       setTax(invoice.tax || 0);
       setTotalAmount(invoice.totalAmount || 0);
       setStatus(invoice.status || "Pending");
     }
   }, [invoice , business ]);
 
-  // Recalculate totals when items or tax change
+  
   useEffect(() => {
     const sub = items.reduce(
       (acc, item) => acc + item.quantity * item.unitPrice,
@@ -84,7 +88,7 @@ function UpdateInvoice() {
     );
     
     setSubTotal(sub);
-    const calculatedTax = sub * 0.15 ;
+    const calculatedTax =  isTaxIncluded ? sub * 0.15 : 0 ;
     setTax(calculatedTax );
     setTotalAmount(sub + Number(tax || 0));
   }, [items]);
