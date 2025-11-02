@@ -53,17 +53,16 @@ function UpdateInvoice() {
   useEffect(() => {
     if (invoice) {
    
-      if(invoice.toClient){
-           setToClient(invoice.toClient);
-      }
-  
+      
+   
       setPoNumber(invoice.poNumber || "");
       setDate(
         invoice.date
           ? new Date(invoice.date).toISOString().slice(0, 10)
           : new Date().toISOString().slice(0, 10)
       );
-      setFromBusiness(invoice.fromBusiness || business?._id || "");
+      setFromBusiness(invoice?.fromBusiness || business?._id || "");
+      setToClient(invoice?.toClient?._id );
    
       setItems(
         invoice.items?.length
@@ -90,7 +89,7 @@ function UpdateInvoice() {
     setSubTotal(sub);
     const calculatedTax =  isTaxIncluded ? sub * 0.15 : 0 ;
     setTax(calculatedTax );
-    setTotalAmount(sub + Number(tax || 0));
+    setTotalAmount(sub + Number(calculatedTax || 0));
   }, [items]);
 
 const handleItemChange = (index, field, value) => {
@@ -138,7 +137,7 @@ const handleItemChange = (index, field, value) => {
       toast.error(error);
       dispatch(clearInvoiceErrors());
     }
-    if (isUpdated) {
+    if (message) {
       toast.success(message);
       dispatch(resetInvoice());
     
@@ -155,8 +154,8 @@ const handleItemChange = (index, field, value) => {
 
 
   return (
-    <div className="w-full h-[100vh] p-4 sm:p-6 md:p-8">
-      <div className="grid gap-6 max-w-5xl mx-auto">
+    <div className="w-full h-[100vh] p-4 sm:p-6 md:p-8 overflow-auto">
+      <div className="h-full  grid gap-6 max-w-5xl mx-auto">
         <div className="grid gap-2">
           <h1 className="text-2xl sm:text-3xl font-bold">Update Invoice</h1>
           <p className="text-muted-foreground">
@@ -164,7 +163,7 @@ const handleItemChange = (index, field, value) => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid gap-6">
+        <form onSubmit={handleSubmit} className="h-full grid gap-6">
           {/* PO Number & Date */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="w-full">
@@ -198,7 +197,7 @@ const handleItemChange = (index, field, value) => {
               <Input
                 type="text"
                 placeholder="Business ID"
-                value={fromBusiness}
+                value={fromBusiness?.name}
                 readOnly
                 onChange={(e) => setFromBusiness(e.target.value)}
                 required
@@ -360,7 +359,7 @@ const handleItemChange = (index, field, value) => {
           </div>
 
           {/* Submit */}
-          <div className="w-full mt-4">
+          <div className="w-full mt-4 mb-4">
             {!loading ? (
               <Button className="w-full sm:w-auto" type="submit">
                 Save Changes

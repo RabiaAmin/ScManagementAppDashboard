@@ -156,7 +156,7 @@ export const updateInvoice = (id, invoiceData) => async (dispatch) => {
       withCredentials: true,
       headers: { "Content-Type": "application/json" },
     });
-    dispatch(invoiceSlice.actions.updateInvoiceSuccess(data.invoice));
+    dispatch(invoiceSlice.actions.updateInvoiceSuccess(data.message));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(
@@ -199,12 +199,14 @@ export const getInvoice = (id) => async (dispatch) => {
   }
 };
 
-export const getAllInvoicesOFThisMonth = (page, limit,startDate,endDate) => async (dispatch) => {
+export const getAllInvoicesOFThisMonth = ({ page, limit, poNumber, startDate, endDate, toClient }) => async (dispatch) => {
   dispatch(invoiceSlice.actions.getAllInvoicesRequest());
   try {
-        const queryParams = new URLSearchParams({ page, limit });
+    const queryParams = new URLSearchParams({ page, limit });
     if (startDate) queryParams.append("startDate", startDate);
     if (endDate) queryParams.append("endDate", endDate);
+    if (poNumber) queryParams.append("poNumber", poNumber);
+    if (toClient) queryParams.append("toClient", toClient);
     const { data } = await axios.get(
       `${BASE_URL}/getAllOfThisMonth?${queryParams.toString()}`,
       { withCredentials: true }

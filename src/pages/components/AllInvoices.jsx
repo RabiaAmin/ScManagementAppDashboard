@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getAllInvoicesOFThisMonth,
@@ -14,7 +14,9 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
+
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -25,32 +27,40 @@ import {
 } from "@/components/ui/table";
 import { Loader2, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useDebounce } from "@/hooks/useDebounce";
 
 function AllInvoices() {
   const dispatch = useDispatch();
   const { invoices, loading, totalPages, totalRecords } = useSelector(
     (state) => state.invoice
   );
+  const { clients } = useSelector(state => state.client); 
+  const [toClient, setToClient] = useState("");
 
   const [page, setPage] = useState(1);
   const [limit] = useState(40);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 500);
 
+
+
+  // Fetch invoices on page change
   useEffect(() => {
-    fetchInvoices(page, limit);
+    fetchInvoices({ page, limit, poNumber: debouncedSearch, toClient });
   }, [page]);
 
-  const fetchInvoices = (page, limit) => {
-    dispatch(getAllInvoicesOFThisMonth(page, limit));
+  // Fetch invoices on searchTerm or toClient change
+  useEffect(() => {
+    fetchInvoices({ page: 1, limit, poNumber: debouncedSearch, toClient });
+    setPage(1); // Reset to first page when filter changes
+  }, [debouncedSearch, toClient]);
+
+  const fetchInvoices = ({ page = 1, limit = 40, poNumber = "", toClient = "" }) => {
+    dispatch(getAllInvoicesOFThisMonth({ page, limit, poNumber, toClient }));
   };
 
-  const sortedInvoices = [...invoices].sort(
-    (a, b) => new Date(b.date) - new Date(a.date)
-  );
 
-  const filteredInvoices = (sortedInvoices || []).filter((invoice) =>
-    invoice?.poNumber?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this invoice?")) {
@@ -62,7 +72,8 @@ function AllInvoices() {
     const updatedInvoice = { ...invoice, status: newStatus };
     dispatch(updateInvoice(invoice._id, updatedInvoice));
   };
-
+   
+   
   return (
     <div className="w-full min-h-screen p-4 sm:p-6 space-y-6">
       {/* Top Bar */}
@@ -71,6 +82,21 @@ function AllInvoices() {
           Total Invoices:{" "}
           <span className="text-primary font-bold">{totalRecords}</span>
         </h2>
+        <div className="w-[30%]">
+              <Label>Filter Client</Label>
+              <Select value={toClient} onValueChange={val => setToClient(val)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a client" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map(client => (
+                    <SelectItem key={client._id} value={client._id}>
+                      {client.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
       </div>
 
       {/* Card with Table */}
@@ -94,7 +120,7 @@ function AllInvoices() {
             <div className="flex justify-center py-10">
               <Loader2 className="animate-spin h-6 w-6 text-primary" />
             </div>
-          ) : filteredInvoices.length === 0 ? (
+          ) : invoices.length === 0 ? (
             <p className="text-center text-gray-500 py-6">
               No invoices found.
             </p>
@@ -116,7 +142,7 @@ function AllInvoices() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredInvoices.map((invoice) => (
+                    {invoices.map((invoice) => (
                       <TableRow key={invoice._id}>
                         <TableCell>{invoice.invoiceNumber}</TableCell>
                         <TableCell>{invoice.poNumber}</TableCell>
