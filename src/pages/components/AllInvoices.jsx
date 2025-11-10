@@ -149,9 +149,9 @@ function AllInvoices() {
                         <TableCell>
                           {new Date(invoice.date).toLocaleDateString()}
                         </TableCell>
-                        <TableCell>{invoice.items.length}</TableCell>
+                        <TableCell>{invoice.items?.length ?? 0}</TableCell>
                         <TableCell>
-                          R{invoice.totalAmount.toFixed(2)}
+                          R{invoice.totalAmount?.toFixed(2)}
                         </TableCell>
                         <TableCell>
                           <Select

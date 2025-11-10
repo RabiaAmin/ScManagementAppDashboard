@@ -75,7 +75,7 @@ function ViewInvoice() {
           withCredentials: true,
         });
         const inv = res.data;
-        console.log("Fetched Invoice:", inv);
+     
         setInvoice(inv.invoice);
         setBusiness(inv.invoice.fromBusiness);
         setClient(inv.invoice.toClient);
