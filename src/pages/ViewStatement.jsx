@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,9 @@ function ViewStatement() {
   const { state: invoice } = useLocation();
   const [bussiness, setBusiness] = useState({});
   const [isDownloading, setIsDownloading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigateTo = useNavigate();
+
 
   // ✅ Sort invoices as soon as invoice data is available
   const sortedInvoices = useMemo(() => {
@@ -82,6 +85,31 @@ function ViewStatement() {
     setIsDownloading(false);
   };
 
+  const markClientInvoicesPaid = async (invoices) => {
+       setLoading(true);
+  const invoiceIds = invoices.map(inv => inv._id);
+
+  try {
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL_INVOICE;
+
+    const res = await axios.put(
+      `${BASE_URL}/mark-as-paid`,
+      { invoiceIds },
+      { withCredentials: true }
+    );
+
+    toast.success(res.data.message);
+
+    setLoading(false);
+    navigateTo('/');
+ 
+    
+
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Unable to mark as paid");
+  }
+};
+
   if (!invoice) {
     return <p>No data available. Please go back.</p>;
   }
@@ -93,7 +121,17 @@ function ViewStatement() {
           {/* Header Section */}
           <div className="flex justify-between items-center bg-muted/40 p-4 rounded-lg shadow-sm">
             <h1 className="text-2xl font-bold dark:text-gray-100">Invoice</h1>
+            <div className="flex gap-2">
 
+            <div >
+          {  loading ? <SpecialLoadingBtn/> :
+            <Button
+              className="bg-green-600 text-white"
+              onClick={() => markClientInvoicesPaid(invoice.invoices)}
+            >
+              Mark All As Paid
+            </Button>}
+            </div>
             <div className="flex gap-4">
               {isDownloading ? (
                 <SpecialLoadingBtn />
@@ -105,6 +143,7 @@ function ViewStatement() {
                   <Download className="w-4 h-4" /> Download PDF
                 </Button>
               )}
+            </div>
             </div>
           </div>
 
