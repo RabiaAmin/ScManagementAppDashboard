@@ -51,7 +51,7 @@ function Dashboard() {
     setLoadingSearch(true);
     const page = 1;
     const limit = 40;
-    dispatch(getAllInvoicesOFThisMonth(page, limit, startDate, endDate));
+    dispatch(getAllInvoicesOFThisMonth({page, limit, startDate, endDate}));
     dispatch(getAllExpenses(startDate, endDate));
 
     setTimeout(() => {
@@ -60,7 +60,7 @@ function Dashboard() {
    
   };
 
-  if (loading && !business && !clients) return <Loader />;
+  if (loading && !business && !clients && stats ) return <Loader />;
 
   return (
     <div className="flex flex-col p-4">
