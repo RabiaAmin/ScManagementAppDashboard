@@ -45,6 +45,7 @@ function UpdateInvoice() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [status, setStatus] = useState("Pending");
   const [isTaxIncluded, setIsTaxIncluded] = useState(true);
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
   dispatch(getInvoice(id));
@@ -63,6 +64,7 @@ function UpdateInvoice() {
       );
       setFromBusiness(invoice?.fromBusiness || business?._id || "");
       setToClient(invoice?.toClient?._id );
+         setCategory(invoice?.category || "");
    
       setItems(
         invoice.items?.length
@@ -74,6 +76,7 @@ function UpdateInvoice() {
         setIsTaxIncluded(false);
       }
       setTax(invoice.tax || 0);
+   
       setTotalAmount(invoice.totalAmount || 0);
       setStatus(invoice.status || "Pending");
     }
@@ -115,12 +118,14 @@ const handleItemChange = (index, field, value) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const invoiceData = {
+      invoiceNumber: invoice.invoiceNumber,
       poNumber,
       date,
       fromBusiness,
       toClient,
       items,
       subTotal,
+      category,
       tax,
       totalAmount,
       status,
@@ -188,6 +193,21 @@ const handleItemChange = (index, field, value) => {
                 className="w-full"
               />
             </div>
+            <div className="w-full">
+                                      <Label>Category</Label>
+                                      <Select value={category} onValueChange={(val) => setCategory(val)} >
+                                        <SelectTrigger className="bg-stone-50 border-stone-300 w-full">
+                                          <SelectValue placeholder="Select category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {["Finished Garments", "CMT Services", "Other Income"].map((cat,index) => (
+                                            <SelectItem key={index} value={cat}>
+                                              {cat}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
           </div>
 
           {/* From Business & To Client */}

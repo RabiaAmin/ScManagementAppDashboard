@@ -4,6 +4,8 @@ import {
   getAllInvoicesOFThisMonth,
   deleteInvoice,
   updateInvoice,
+  clearInvoiceErrors,
+  resetInvoice,
 } from "@/store/slices/invoiceSlice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,10 +30,11 @@ import {
 import { Loader2, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDebounce } from "@/hooks/useDebounce";
+import { toast } from "react-toastify";
 
 function AllInvoices() {
   const dispatch = useDispatch();
-  const { invoices, loading, totalPages, totalRecords } = useSelector(
+  const { invoices, loading, totalPages, totalRecords ,message,error } = useSelector(
     (state) => state.invoice
   );
   const { clients } = useSelector(state => state.client); 
@@ -72,7 +75,21 @@ function AllInvoices() {
     const updatedInvoice = { ...invoice, status: newStatus };
     dispatch(updateInvoice(invoice._id, updatedInvoice));
   };
-   
+  
+
+      useEffect(() => {
+        
+    
+        if (error) {
+          toast.error(error);
+          dispatch(clearInvoiceErrors());
+        }
+        if (message) {
+          toast.success(message);
+          dispatch(resetInvoice());
+        
+        }
+      }, [error, message, dispatch]);
    
   return (
     <div className="w-full min-h-screen p-4 sm:p-6 space-y-6">

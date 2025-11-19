@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   getAllExpenses,
-
+clearAllExpenseErrors,
+resetExpenseStatus,
   deleteExpense,
 } from "../../store/slices/expenseSlice";
 import Loader from "@/components/Loader";
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Loader2, Eye, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function ManageExpense() {
   const [startDate, setStartDate] = useState("");
@@ -34,7 +36,7 @@ function ManageExpense() {
   const [isSearchLoading, setIsSearchLoading] = useState(false);
 
   const dispatch = useDispatch();
-  const { loading,  Expenses } = useSelector(
+  const { loading,  Expenses ,error , message } = useSelector(
     (state) => state.expense
   );
 
@@ -58,6 +60,20 @@ function ManageExpense() {
     if(window.confirm("Are you sure you want to delete this expense?")){
         dispatch(deleteExpense(id));}
   }
+
+      useEffect(() => {
+          
+      
+          if (error) {
+            toast.error(error);
+            dispatch(clearAllExpenseErrors());
+          }
+          if (message) {
+            toast.success(message);
+            dispatch(resetExpenseStatus());
+          
+          }
+        }, [error, message, dispatch]);
 
   if (loading) {
     return <Loader />;

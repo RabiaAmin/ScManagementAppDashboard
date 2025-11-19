@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,11 @@ import { Download, Mail } from "lucide-react";
 import { toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
+import { useSelector } from "react-redux";
 
 function ViewStatement() {
   const { state: invoice } = useLocation();
-  const [bussiness, setBusiness] = useState({});
+  const { business } = useSelector((state) => state.business);
   const [isDownloading, setIsDownloading] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigateTo = useNavigate();
@@ -26,23 +27,7 @@ function ViewStatement() {
     });
   }, [invoice]);
 
-  useEffect(() => {
-    const fetchBusiness = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL_BUSINESS_VIEW}`,
-          { withCredentials: true }
-        );
-        setBusiness(res.data.business);
-      } catch (err) {
-        toast.error(
-          err.response?.data?.message || "Failed to fetch business data"
-        );
-      }
-    };
 
-    fetchBusiness();
-  }, []);
 
   const printRef = useRef();
 
@@ -160,14 +145,14 @@ function ViewStatement() {
                 <div className="flex flex-col gap-6 mb-4">
                   <div className="border border-stone-400 p-4 rounded-2xl text-xl">
                     <h2 className="text-2xl font-bold">From:</h2>
-                    <p>{bussiness.name}</p>
+                    <p>{business.name}</p>
                     <p>
-                      VAT No: {bussiness.vatNumber} CK Number:{" "}
-                      {bussiness.ckNumber}
+                      VAT No: {business.vatNumber} CK Number:{" "}
+                      {business.ckNumber}
                     </p>
-                    <p>{bussiness.address}</p>
+                    <p>{business.address}</p>
                     <p>
-                      cell: {bussiness.phone} Tel: {bussiness.telPhone}
+                      cell: {business.phone} Tel: {business.telPhone}
                     </p>
                   </div>
                 </div>

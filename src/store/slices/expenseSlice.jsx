@@ -53,7 +53,7 @@ const expenseSlice = createSlice({
       state.loading = false;
       state.error = null;
       state.Expenses = state.Expenses.filter(
-        (exp) => exp._id !== action.payload
+        (exp) => exp._id !== action.payload.Expenses
       );
       state.message = action.payload;
     },

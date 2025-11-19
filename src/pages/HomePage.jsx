@@ -16,6 +16,7 @@ import {
   FolderGit,
   Home,
   LogOut,
+  Notebook,
   Package,
   Package2,
   Package2Icon,
@@ -36,6 +37,7 @@ import Invoices from "./components/Invoices";
 import Clients from "./components/Clients";
 
 import Expense from "./components/Expense";
+import BookKeeping from "./components/BookKeeping";
 
 function HomePage() {
   const [active, setActive] = useState("Dashboard");
@@ -83,6 +85,12 @@ function HomePage() {
                <SideBarLink
               menu="Expense"
               icon={Wallet2}
+              active={active}
+              setActive={setActive}
+            />
+                  <SideBarLink
+              menu="Bookkeeping"
+              icon={Notebook}
               active={active}
               setActive={setActive}
             />
@@ -165,6 +173,18 @@ function HomePage() {
                     <FolderGit className="h-5 w-5" />
                     Expense
                   </Link>
+                      <Link
+                    to="#"
+                    onClick={() => setActive("Bookkeeping")}
+                    className={`${
+                      active === "Bookkeeping"
+                        ? "text-stone-900"
+                        : "text-stone-600 hover:text-stone-900"
+                    } flex items-center gap-4 px-2.5`}
+                  >
+                    <Notebook className="h-5 w-5" />
+                    Bookkeeping
+                  </Link>
                     <Link
                     to="#"
                     onClick={() => setActive("Clients")}
@@ -227,6 +247,8 @@ function HomePage() {
                   return <Invoices />;
                 case "Expense":
                   return <Expense/>
+                case "Bookkeeping":
+                  return <BookKeeping />;
                 case "Clients":
                   return <Clients />;
                 default:

@@ -22,6 +22,7 @@ import {
   fetchCategories,
   resetExpenseCategory,
 } from "@/store/slices/expenseCategorySlice";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 function ManageExpenseCategory() {
   const { loading, error, message, isCreated, categories } = useSelector(
@@ -31,11 +32,12 @@ function ManageExpenseCategory() {
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-
+  const [type, setType] = useState("");
   const addCategoryHandler = () => {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("description", description);
+    formData.append("type", type);
     dispatch(addCategory(formData));
   };
   const handleDeleteCategory = (categoryId) => {
@@ -58,6 +60,7 @@ function ManageExpenseCategory() {
       dispatch(resetExpenseCategory());
       dispatch(fetchCategories());
       setName("");
+      setType("");
       setDescription("");
     }
   }, [dispatch, error, isCreated, message]);
@@ -93,6 +96,23 @@ function ManageExpenseCategory() {
                 onChange={(e) => setDescription(e.target.value)}
                 className="bg-white border-stone-300 focus:ring-stone-400"
               />
+              
+                <Select
+                  onValueChange={(val) => setType(val)}
+                  value={type}
+                >
+                  <SelectTrigger className="bg-stone-50 border-stone-300 w-full">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["COGS","EXPENSE"].map((cat , index) => (
+                      <SelectItem key={index} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+           
             </div>
 
             <Button
@@ -107,9 +127,11 @@ function ManageExpenseCategory() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-stone-200">
-                    <TableHead className="w-1/6 text-stone-700">#</TableHead>
-                    <TableHead className="w-1/3 text-stone-700">Name</TableHead>
-                    <TableHead className="w-1/2 text-stone-700">
+                    <TableHead className="w-1/5 text-stone-700">#</TableHead>
+                    <TableHead className="w-1/2 text-stone-700">Name</TableHead>
+                    <TableHead className="w-1/2 text-stone-700">Type</TableHead>
+                  
+                    <TableHead className="w-1/3 text-stone-700">
                       Description
                     </TableHead>
                     <TableHead className="text-right text-stone-700">
@@ -122,6 +144,8 @@ function ManageExpenseCategory() {
                     <TableRow key={cat._id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{cat.name}</TableCell>
+                      <TableCell>{cat?.type || "-" }</TableCell>
+
                       <TableCell>{cat.description}</TableCell>
                       <TableCell className="text-right">
                         <Button

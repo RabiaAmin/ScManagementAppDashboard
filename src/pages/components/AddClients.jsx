@@ -26,6 +26,7 @@ function AddClients() {
   const [vatNumber,setVatNumber] = useState("");
   const [registrationNumber,setRegistrationNumber] = useState("");
   const [fax,setFax] = useState("");
+  const [vatApplicable,setVatApplicable] = useState(true);
 
 
   const addClientHandler = ()=>{
@@ -38,6 +39,7 @@ function AddClients() {
       formData.append("vatNumber",vatNumber);
       formData.append("registrationNumber",registrationNumber);
       formData.append("fax",fax);
+      formData.append("vatApplicable",vatApplicable);
       dispatch(addClient(formData));
   }
 
@@ -58,6 +60,7 @@ function AddClients() {
       setAddress("");
       setVatNumber("");
       setRegistrationNumber("");
+      vatApplicable(true);
       setFax("");
     }
   },[dispatch,error,isCreated,message])
@@ -118,6 +121,19 @@ function AddClients() {
             <Label>Fax</Label>
             <Input type="text" placeholder="client fax" value={fax}  onChange={(e)=>setFax(e.target.value)}  />
           </div>
+
+           <div className="grid gap-2">
+                          <input
+                            id="vatApplicable"
+                            type="checkbox"
+                            checked={vatApplicable}
+                            onChange={(e) => setVatApplicable(e.target.checked)}
+                            className="w-4 h-4 cursor-pointer accent-green-600"
+                          />
+                          <Label htmlFor="vatApplicable" className="cursor-pointer">
+                            VAT Applicable
+                          </Label>
+                        </div>
 
           {/* Save Button */}
           <div className="grid gap-2 mb-8">
