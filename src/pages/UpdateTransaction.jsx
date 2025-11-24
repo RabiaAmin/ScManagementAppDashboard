@@ -18,7 +18,6 @@ import Loader from "@/components/Loader";
 
 import {
   updateBookTransaction,
- 
   clearAllTransactionErrors,
   resetTransactionStatus,
 } from "@/store/slices/bookTransactionSlice";
@@ -69,7 +68,9 @@ function UpdateBookTransaction() {
         setDescription(t.description || "");
         setDate(t.date ? t.date.split("T")[0] : "");
       } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to fetch transaction");
+        toast.error(
+          err.response?.data?.message || "Failed to fetch transaction"
+        );
       }
     };
     fetchTransaction();
@@ -91,6 +92,8 @@ function UpdateBookTransaction() {
       return;
     }
 
+    const vatApplicable = parseFloat(tax) > 0 ? true : false;
+
     const updatedData = {
       transactionType,
       sourceType,
@@ -102,6 +105,7 @@ function UpdateBookTransaction() {
       paymentMethod,
       description,
       date,
+      isVatApplicable: vatApplicable,
     };
 
     dispatch(updateBookTransaction(id, updatedData));
@@ -116,7 +120,6 @@ function UpdateBookTransaction() {
     if (message) {
       toast.success(message);
       dispatch(resetTransactionStatus());
-     
     }
   }, [dispatch, error, message]);
 
@@ -210,9 +213,10 @@ function UpdateBookTransaction() {
                   <SelectValue placeholder="Select payment method" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="CASH">Cash</SelectItem>
-                  <SelectItem value="BANK">Bank</SelectItem>
-                  <SelectItem value="CARD">Card</SelectItem>
+                  <SelectItem value="Cash">Cash</SelectItem>
+                  <SelectItem value="Bank Transfer">Bank</SelectItem>
+                  <SelectItem value="Card">Card</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>

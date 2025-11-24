@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import SpecialLoadingBtn from "./components/SpecialLoadingBtn";
 import { Button } from "@/components/ui/button";
 import { usePdfDownloader } from "@/hooks/useDownloadPdf";
+import Loader from "../components/Loader";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL_PROFIT_LOSS_REPORT;
 
@@ -35,7 +36,7 @@ function ProfitLossReport() {
     fetchReport();
   }, [start, end]);
 
-  if (loading) return <p>Loading report...</p>;
+  if (loading) return <Loader/>;
   if (!reportData) return <p>No report available.</p>;
 
   const r = reportData;

@@ -32,6 +32,7 @@ function AddBookTransaction() {
   const sourceType = "MANUAL";
   const [client, setClient] = useState("");
   const [category, setCategory] = useState("");
+  const [supplier, setSupplier] = useState("");
   const [amount, setAmount] = useState("");
   const [tax, setTax] = useState("");
   const [total, setTotal] = useState("");
@@ -72,6 +73,7 @@ function AddBookTransaction() {
     setAmount("");
     setTax("");
     setTotal("");
+    setSupplier("");
     setPaymentMethod("");
     setIncomeCategory("");
     setDescription("");
@@ -96,10 +98,14 @@ function AddBookTransaction() {
       return;
     }
 
+    const vatApplicable = parseFloat(tax) > 0 ? true : false;
+
+
     const formData = {
       transactionType,
       sourceType,
       clientName: transactionType === "INCOME" ? client : "",
+      supplierName: transactionType === "EXPENSE" ? supplier : "",
       category: transactionType === "EXPENSE" ? category : null,
       incomeCategory: transactionType === "INCOME" ? incomeCategory : "",
       amount,
@@ -108,6 +114,7 @@ function AddBookTransaction() {
       paymentMethod,
       description,
       date,
+      isVatApplicable: vatApplicable, 
     };
 
     dispatch(addBookTransaction(formData));
@@ -174,6 +181,20 @@ function AddBookTransaction() {
                 />
               </div>
             )}
+             {transactionType === "EXPENSE" && (
+              <div>
+                <Label>Supplier</Label>
+                <Input
+                  type="text"
+                  placeholder="Enter Supplier name"
+                  value={supplier}
+                  onChange={(e) => setSupplier(e.target.value)}
+                  required
+                  className="bg-stone-50 border-stone-300"
+                />
+              </div>
+            )}
+
 
             {transactionType === "INCOME" && (
               <div>
