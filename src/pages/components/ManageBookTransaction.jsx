@@ -30,9 +30,12 @@ import { toast } from "react-toastify";
 
 function ManageBookTransaction() {
   const dispatch = useDispatch();
-  const {error, loading, transactions ,message } = useSelector(
+  const {error, loading, transactions,totalPages ,message } = useSelector(
     (state) => state.bookTransaction
   );
+  
+    const [page, setPage] = useState(1);
+    const [limit] = useState(40);
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -51,7 +54,7 @@ function ManageBookTransaction() {
     setStartDate(start);
     setEndDate(end);
 
-    dispatch(getAllBookTransactions({startDate:start, endDate:end}));
+    dispatch(getAllBookTransactions({startDate:start, endDate:end, page:page, limit:limit }));
   }, [dispatch]);
 
   // --- Delete Transaction ---
@@ -147,6 +150,7 @@ function ManageBookTransaction() {
               No transactions found for this period.
             </p>
           ) : (
+            <>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
@@ -199,6 +203,24 @@ function ManageBookTransaction() {
                 </TableBody>
               </Table>
             </div>
+              <div className="flex flex-wrap justify-center items-center mt-4 gap-3 sm:gap-4">
+                            <Button
+                              disabled={page === 1}
+                              onClick={() => setPage((prev) => prev - 1)}
+                            >
+                              Prev
+                            </Button>
+                            <span className="text-sm sm:text-base">
+                              Page {page} of {totalPages || 1}
+                            </span>
+                            <Button
+                              disabled={page === totalPages}
+                              onClick={() => setPage((prev) => prev + 1)}
+                            >
+                              Next
+                            </Button>
+                          </div>
+            </>
           )}
         </CardContent>
       </Card>

@@ -7,6 +7,8 @@ const bookTransactionSlice = createSlice({
   name: "bookTransaction",
   initialState: {
     transactions: [],
+     page: 1,
+    totalPages: 1,
     loading: false,
     error: null,
     message: null,
@@ -34,6 +36,8 @@ const bookTransactionSlice = createSlice({
       state.error = null;
     },
     getAllTransactionSuccess(state, action) {
+        state.page = action.payload.page;
+      state.totalPages = action.payload.totalPages;
       state.transactions = action.payload.transactions;
       state.loading = false;
       state.error = null;
@@ -102,12 +106,14 @@ export const addBookTransaction = (formData)=> async (dispatch)=>{
 
 }
 
-export const getAllBookTransactions = ({startDate,endDate}) => async (dispatch) => {
+export const getAllBookTransactions = ({startDate,endDate,page,limit}) => async (dispatch) => {
   dispatch(bookTransactionSlice.actions.getAllTransactionRequest());
   try {
       const queryParams = new URLSearchParams({});
     if (startDate) queryParams.append("startDate", startDate);
     if (endDate) queryParams.append("endDate", endDate);
+    if(page) queryParams.append("page", page);
+    if(limit) queryParams.append("limit", limit);
     const { data } = await axios.get(
       `${BASE_URL}/getAll?${queryParams.toString()}`,
       { withCredentials: true }

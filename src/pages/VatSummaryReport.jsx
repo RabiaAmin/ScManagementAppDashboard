@@ -60,156 +60,177 @@ export default function VatSummaryReport() {
         )}
       </div>
 
-      <div ref={printRef} className="bg-white p-10 shadow rounded-xl">
-        {/* Header */}
-        <h1 className="text-3xl font-bold mb-1">{business?.name}</h1>
-        <p className="text-lg text-gray-700 mb-6">VAT Summary Report</p>
+  <div ref={printRef} className="bg-white p-12  rounded-none border-none shadow-none ">
 
-        <p className="text-sm text-gray-600">
-          VAT Number: <strong>{business?.vatNumber || "N/A"}</strong>
-        </p>
-        <p className="text-sm text-gray-600 mb-6">
-          Reporting Period: <strong>{start}</strong> – <strong>{end}</strong>
-        </p>
+  {/* Company Header */}
+  <div className="mb-10 border-b pb-6">
+    <h1 className="text-4xl font-extrabold tracking-wide">{business?.name}</h1>
+    <p className="text-lg text-gray-700 mt-1">VAT Summary Report</p>
 
-        {/* Overview */}
-        <h2 className="font-bold text-xl mb-3 mt-6">1. Overview</h2>
-        <table className="w-full border text-sm">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Summary</th>
-              <th className="border p-2">Amount ({currency})</th>
-            </tr>
-          </thead>
-          <tbody>
+    <div className="mt-4 text-sm text-gray-600 leading-relaxed">
+      <p>VAT Number: <span className="font-semibold">{business?.vatNumber || "N/A"}</span></p>
+      <p>Reporting Period: <span className="font-semibold">{start}</span> – <span className="font-semibold">{end}</span></p>
+    </div>
+  </div>
+
+  {/* Overview Section */}
+  <div className="mb-10">
+    <h2 className="text-2xl font-bold mb-4 border-l-4 pl-3 border-blue-500">1. Overview</h2>
+
+    <table className="w-full text-sm border border-gray-300 rounded-lg overflow-hidden">
+      <thead className="bg-gray-100 text-gray-700">
+        <tr>
+          <th className="border p-3 font-semibold">Summary</th>
+          <th className="border p-3 font-semibold">Amount ({currency})</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr className="hover:bg-gray-50">
+          <td className="border p-3">Total VAT Collected (Output VAT)</td>
+          <td className="border p-3 font-medium">{format(r.outputVAT)}</td>
+        </tr>
+        <tr className="hover:bg-gray-50">
+          <td className="border p-3">Total VAT Paid (Input VAT)</td>
+          <td className="border p-3 font-medium">{format(r.inputVAT)}</td>
+        </tr>
+        <tr className="bg-blue-50 font-semibold">
+          <td className="border p-3">Net VAT Payable / Refundable</td>
+          <td className="border p-3">{format(r.netVAT)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  {/* Output VAT Section */}
+  <div className="mb-10">
+    <h2 className="text-2xl font-bold mb-2 border-l-4 pl-3 border-green-600">
+      2. VAT Collected (Output VAT)
+    </h2>
+    <p className="text-sm text-gray-600 mb-3">VAT charged on sales & income</p>
+
+    <div className="rounded-lg border overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border p-3">Date</th>
+            <th className="border p-3">Ref No.</th>
+            <th className="border p-3">Customer</th>
+            <th className="border p-3">Taxable Amount</th>
+            <th className="border p-3">VAT Rate</th>
+            <th className="border p-3">VAT Amount</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {r.outputTransactions?.length === 0 ? (
             <tr>
-              <td className="border p-2">Total VAT Collected (Output VAT)</td>
-              <td className="border p-2">{format(r.outputVAT)}</td>
+              <td colSpan="6" className="text-center p-5 text-gray-500">
+                No output VAT transactions
+              </td>
             </tr>
-            <tr>
-              <td className="border p-2">Total VAT Paid (Input VAT)</td>
-              <td className="border p-2">{format(r.inputVAT)}</td>
-            </tr>
-            <tr className="font-semibold">
-              <td className="border p-2">Net VAT Payable / Refundable</td>
-              <td className="border p-2">{format(r.netVAT)}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        {/* Output VAT */}
-        <h2 className="font-bold text-xl mt-10 mb-3">
-          2. VAT Collected (Output VAT)
-        </h2>
-        <p className="text-sm text-gray-600 mb-2">
-          VAT charged on sales & income
-        </p>
-        <table className="w-full border text-sm">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Date</th>
-              <th className="border p-2">Ref No.</th>
-              <th className="border p-2">Customer</th>
-              <th className="border p-2">Taxable Amount</th>
-              <th className="border p-2">VAT Rate</th>
-              <th className="border p-2">VAT Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {r.outputTransactions?.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center p-3">
-                  No output VAT transactions
-                </td>
+          ) : (
+            r.outputTransactions.map((t) => (
+              <tr key={t._id} className="hover:bg-gray-50">
+                <td className="border p-3">{t.date?.slice(0, 10)}</td>
+                <td className="border p-3">{t.reference}</td>
+                <td className="border p-3">{t.customerOrSupplier}</td>
+                <td className="border p-3">{format(t.taxableAmount)}</td>
+                <td className="border p-3">{t.vatRate}</td>
+                <td className="border p-3">{format(t.vatAmount)}</td>
               </tr>
-            ) : (
-              r.outputTransactions?.map((t) => (
-                <tr key={t._id}>
-                  <td className="border p-2">{t.date?.slice(0, 10)}</td>
-                  <td className="border p-2">{t.reference}</td>
-                  <td className="border p-2">{t.customerOrSupplier}</td>
-                  <td className="border p-2">{format(t.taxableAmount)}</td>
-                  <td className="border p-2">{t.vatRate}</td>
-                  <td className="border p-2">{format(t.vatAmount)}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
 
-        <p className="text-right font-semibold mt-2">
-          Subtotal Output VAT: {format(r.outputVAT)}
-        </p>
+    <p className="text-right font-semibold mt-3 text-gray-700">
+      Subtotal Output VAT: {format(r.outputVAT)}
+    </p>
+  </div>
 
-        {/* Input VAT */}
-        <h2 className="font-bold text-xl mt-10 mb-3">
-          3. VAT Paid (Input VAT)
-        </h2>
-        <p className="text-sm text-gray-600 mb-2">
-          VAT paid on purchases, expenses, and supplier invoices
-        </p>
-        <table className="w-full border text-sm">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Date</th>
-              <th className="border p-2">Ref No.</th>
-              <th className="border p-2">Supplier</th>
-              <th className="border p-2">Taxable Amount</th>
-              <th className="border p-2">VAT Rate</th>
-              <th className="border p-2">VAT Amount</th>
+  {/* Input VAT Section */}
+  <div className="mb-10">
+    <h2 className="text-2xl font-bold mb-2 border-l-4 pl-3 border-purple-600">
+      3. VAT Paid (Input VAT)
+    </h2>
+    <p className="text-sm text-gray-600 mb-3">VAT paid on expenses & purchases</p>
+
+    <div className="rounded-lg border overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-gray-100">
+          <tr>
+            <th className="border p-3">Date</th>
+            <th className="border p-3">Ref No.</th>
+            <th className="border p-3">Supplier</th>
+            <th className="border p-3">Taxable Amount</th>
+            <th className="border p-3">VAT Rate</th>
+            <th className="border p-3">VAT Amount</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {r.inputTransactions?.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="text-center p-5 text-gray-500">
+                No input VAT transactions
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {r.inputTransactions?.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center p-3">
-                  No input VAT transactions
-                </td>
+          ) : (
+            r.inputTransactions.map((t) => (
+              <tr key={t._id} className="hover:bg-gray-50">
+                <td className="border p-3">{t.date?.slice(0, 10)}</td>
+                <td className="border p-3">{t.reference}</td>
+                <td className="border p-3">{t.customerOrSupplier}</td>
+                <td className="border p-3">{format(t.taxableAmount)}</td>
+                <td className="border p-3">{t.vatRate}</td>
+                <td className="border p-3">{format(t.vatAmount)}</td>
               </tr>
-            ) : (
-              r.inputTransactions?.map((t) => (
-                <tr key={t._id}>
-                  <td className="border p-2">{t.date?.slice(0, 10)}</td>
-                  <td className="border p-2">{t.reference}</td>
-                  <td className="border p-2">{t.customerOrSupplier}</td>
-                  <td className="border p-2">{format(t.taxableAmount)}</td>
-                  <td className="border p-2">{t.vatRate}</td>
-                  <td className="border p-2">{format(t.vatAmount)}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+            ))
+          )}
+        </tbody>
+      </table>
+    </div>
 
-        <p className="text-right font-semibold mt-2">
-          Subtotal Input VAT: {format(r.inputVAT)}
-        </p>
+    <p className="text-right font-semibold mt-3 text-gray-700">
+      Subtotal Input VAT: {format(r.inputVAT)}
+    </p>
+  </div>
 
-        {/* Net VAT */}
-        <h2 className="font-bold text-xl mt-10 mb-3">4. Net VAT Calculation</h2>
-        <table className="w-full border text-sm">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border p-2">Description</th>
-              <th className="border p-2">Amount ({currency})</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border p-2">Total Output VAT</td>
-              <td className="border p-2">{format(r.outputVAT)}</td>
-            </tr>
-            <tr>
-              <td className="border p-2">Total Input VAT</td>
-              <td className="border p-2">{format(r.inputVAT)}</td>
-            </tr>
-            <tr className="font-semibold">
-              <td className="border p-2">Net VAT Payable / Refund</td>
-              <td className="border p-2">{format(r.netVAT)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+  {/* Final Net VAT */}
+  <div>
+    <h2 className="text-2xl font-bold mb-3 border-l-4 pl-3 border-orange-500">
+      4. Net VAT Calculation
+    </h2>
+
+    <table className="w-full border text-sm rounded-lg overflow-hidden">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="border p-3">Description</th>
+          <th className="border p-3">Amount ({currency})</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr className="hover:bg-gray-50">
+          <td className="border p-3">Total Output VAT</td>
+          <td className="border p-3">{format(r.outputVAT)}</td>
+        </tr>
+
+        <tr className="hover:bg-gray-50">
+          <td className="border p-3">Total Input VAT</td>
+          <td className="border p-3">{format(r.inputVAT)}</td>
+        </tr>
+
+        <tr className="font-semibold bg-blue-50">
+          <td className="border p-3">Net VAT Payable / Refund</td>
+          <td className="border p-3">{format(r.netVAT)}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
     </div>
   );
 }
