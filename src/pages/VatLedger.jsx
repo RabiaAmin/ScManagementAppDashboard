@@ -24,7 +24,7 @@ export default function VatLedger() {
   const format = (n) =>
     n || n === 0 ? Number(n).toLocaleString(undefined, { minimumFractionDigits: 2 }) : "0.00";
 
-  const currency = business?.currency || "USD";
+  const currency = business?.currency || "ZAR";
 
   useEffect(() => {
     const fetchLedger = async () => {

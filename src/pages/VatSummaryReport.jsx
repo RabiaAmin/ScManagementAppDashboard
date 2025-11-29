@@ -42,7 +42,7 @@ export default function VatSummaryReport() {
   if (!reportData) return <p>No report available.</p>;
 
   const r = reportData;
-  const currency = business?.currency || "USD";
+  const currency = business?.currency || "ZAR";
   const format = (n) => (n ? n.toLocaleString() : "0.00");
 
   return (

@@ -44,7 +44,7 @@ export default function CashFlowReport() {
   if (loading) return <Loader />;
   if (!report) return <p>No cash flow data available.</p>;
 
-  const currency = business?.currency || "R";
+  const currency = business?.currency || "ZAR";
 
   return (
     <div className="p-8">
