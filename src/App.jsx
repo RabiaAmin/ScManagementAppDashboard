@@ -23,7 +23,8 @@ import UpdateExpense from "./pages/UpdateExpense";
 import PrintableExpenseReport from "./pages/components/PrintableExpenseReport";
 import AddAccount from "./pages/components/AddAccount";
 import UpdateTransaction from "./pages/UpdateTransaction";
-
+import {getAllEmployee} from "./store/slices/employeeSlice";
+import UpdateEmployee from "./pages/UpdateEmployee";
 const GeneralLedger = React.lazy(() => import("./pages/GeneralLedger"));
 const VatLedger = React.lazy(() => import("./pages/VatLedger"));
 const ProfitLossReport = React.lazy(() => import("./pages/ProfitLossReport"));
@@ -46,6 +47,8 @@ function App() {
       dispatch(getAllClients());
       dispatch(getAllInvoicesOFThisMonth(1, 40));
       dispatch(getAllExpenses(start, end));
+      dispatch(getAllEmployee());
+
 
       setLoading(false);
     };
@@ -83,7 +86,7 @@ function App() {
         <Route path="/profit-loss-report" element={<ProfitLossReport />} />
         <Route path="/vat-summary-report" element={<VatSummaryReport />} />
         <Route path="/cash-flow-report" element={<CashFlowReport />} />
-        
+        <Route path="/employee/update/:id" element={<UpdateEmployee/>}/>   
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

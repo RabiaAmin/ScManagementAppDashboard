@@ -13,6 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  BookUser,
   FolderGit,
   Home,
   LogOut,
@@ -38,6 +39,7 @@ import Clients from "./components/Clients";
 
 import Expense from "./components/Expense";
 import BookKeeping from "./components/BookKeeping";
+import Employees from "./components/Employees";
 
 function HomePage() {
   const [active, setActive] = useState("Dashboard");
@@ -94,6 +96,14 @@ function HomePage() {
               active={active}
               setActive={setActive}
             />
+
+                     <SideBarLink
+              menu="Employees"
+              icon={BookUser}
+              active={active}
+              setActive={setActive}
+            />
+       
           
                <SideBarLink
               menu="Clients"
@@ -185,6 +195,18 @@ function HomePage() {
                     <Notebook className="h-5 w-5" />
                     Bookkeeping
                   </Link>
+                      <Link
+                    to="#"
+                    onClick={() => setActive("Employees")}
+                    className={`${
+                      active === "Employees"
+                        ? "text-stone-900"
+                        : "text-stone-600 hover:text-stone-900"
+                    } flex items-center gap-4 px-2.5`}
+                  >
+                    <Users2 className="h-5 w-5" />
+                    Employees
+                  </Link>
                     <Link
                     to="#"
                     onClick={() => setActive("Clients")}
@@ -251,6 +273,8 @@ function HomePage() {
                   return <BookKeeping />;
                 case "Clients":
                   return <Clients />;
+                case "Employees":
+                  return <Employees />;
                 default:
                   return null;
               }

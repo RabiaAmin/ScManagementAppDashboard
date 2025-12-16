@@ -69,9 +69,9 @@ const invoiceSlice = createSlice({
       state.loading = false;
       state.isDeleted = true;
       state.invoices = state.invoices.filter(
-        (invoice) => invoice._id !== action.payload.invoice
+        (invoice) => invoice._id !== action.payload.id
       );
-      state.message = action.payload;
+      state.message = action.payload.message;
     },
     deleteInvoiceFail(state, action) {
       state.loading = false;
@@ -171,7 +171,7 @@ export const deleteInvoice = (id) => async (dispatch) => {
   dispatch(invoiceSlice.actions.deleteInvoiceRequest());
   try {
     const {data} = await axios.delete(`${BASE_URL}/delete/${id}`, { withCredentials: true });
-    dispatch(invoiceSlice.actions.deleteInvoiceSuccess(data.message));
+    dispatch(invoiceSlice.actions.deleteInvoiceSuccess(data));
     dispatch(invoiceSlice.actions.clearInvoiceErrors());
   } catch (error) {
     dispatch(

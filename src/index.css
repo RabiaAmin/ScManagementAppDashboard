@@ -154,3 +154,23 @@ h1 {
     @apply bg-background text-foreground;
   }
 }
+
+
+/* PDF EXPORT FIXES */
+.pdf-print {
+  overflow: visible !important;
+}
+
+.pdf-print * {
+  overflow: visible !important;
+}
+
+/* Hide scrollbars completely */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none; /* Firefox */
+}
+

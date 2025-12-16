@@ -7,31 +7,45 @@ export const usePdfDownloader = () => {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const handlePdfDownload = async (elementRef, fileName) => {
-    setIsDownloading(true);
-    const element = elementRef.current;
-    const imgData = await toJpeg(element, { cacheBust: true, pixelRatio: 1.5, quality: 0.9 });
+    try {
+      setIsDownloading(true);
+      const element = elementRef.current;
 
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgData = await toJpeg(element, {
+        cacheBust: true,
+        pixelRatio: 2,
+        quality: 1,
+      });
 
-    const imgProps = pdf.getImageProperties(imgData);
-    const imgWidth = pageWidth;
-    const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
+      const pdf = new jsPDF("p", "mm", "a4");
 
-    let finalWidth = imgWidth;
-    let finalHeight = imgHeight;
-    if (imgHeight > pageHeight) {
-      finalHeight = pageHeight;
-      finalWidth = (imgProps.width * pageHeight) / imgProps.height;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      // First page
+      pdf.addImage(imgData, "JPEG", 0, position, pageWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      // Additional pages
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "JPEG", 0, position, pageWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`${fileName}.pdf`);
+    } catch (error) {
+      console.error("PDF download failed", error);
+    } finally {
+      setIsDownloading(false);
     }
-
-    const x = (pageWidth - finalWidth) / 2;
-    const y = 0;
-
-    pdf.addImage(imgData, "JPEG", x, y, finalWidth, finalHeight);
-    pdf.save(`${fileName}.pdf`);
-    setIsDownloading(false);
   };
 
   return { isDownloading, handlePdfDownload };

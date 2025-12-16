@@ -8,7 +8,7 @@ import expenseCategoryReducer from "./slices/expenseCategorySlice"
 import expense from "./slices/expenseSlice"
 import BankAccount from "./slices/bankAccountSlice"
 import bookTransactionSlice from "./slices/bookTransactionSlice"
-
+import EmployeeReducer from "./slices/employeeSlice"
 export const store = configureStore({
     reducer:{
         user : userReducer,
@@ -20,6 +20,7 @@ export const store = configureStore({
         expense: expense,
         BankAccount:BankAccount,
         bookTransaction: bookTransactionSlice,
+        employee: EmployeeReducer,
         
     }
 })

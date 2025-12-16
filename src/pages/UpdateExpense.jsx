@@ -2,7 +2,7 @@ import Loader from "@/components/Loader";
 import { fetchCategories } from "@/store/slices/expenseCategorySlice";
 import {
   clearAllExpenseErrors,
-  getAllExpenses,
+ 
   resetExpenseStatus,
   updateExpense,
 } from "@/store/slices/expenseSlice";
@@ -49,6 +49,7 @@ function UpdateExpense() {
    useEffect(() => {
      dispatch(fetchCategories());
    }, [dispatch]);
+   
   useEffect(() => {    const fetchExpense = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/get/${id}`, { withCredentials: true });
@@ -101,7 +102,7 @@ function UpdateExpense() {
     if (message) {
       toast.success(message);
       dispatch(resetExpenseStatus());
-      dispatch(getAllExpenses());
+   
     }
   }, [dispatch, error, loading, message]);
 
