@@ -24,6 +24,7 @@ import PrintableExpenseReport from "./pages/components/PrintableExpenseReport";
 import AddAccount from "./pages/components/AddAccount";
 import UpdateTransaction from "./pages/UpdateTransaction";
 import {getAllEmployee} from "./store/slices/employeeSlice";
+import { getAllLoans } from "./store/slices/employeeLoanSlice";
 import UpdateEmployee from "./pages/UpdateEmployee";
 const GeneralLedger = React.lazy(() => import("./pages/GeneralLedger"));
 const VatLedger = React.lazy(() => import("./pages/VatLedger"));
@@ -48,6 +49,7 @@ function App() {
       dispatch(getAllInvoicesOFThisMonth(1, 40));
       dispatch(getAllExpenses(start, end));
       dispatch(getAllEmployee());
+      dispatch(getAllLoans());
 
 
       setLoading(false);
