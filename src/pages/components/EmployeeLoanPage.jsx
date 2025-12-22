@@ -109,6 +109,7 @@ function EmployeeLoanPage() {
               <Table className="min-w-[90%]">
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Loan CreatedAt</TableHead>
                     <TableHead>Loan Amount</TableHead>
                     <TableHead>Repayment Type</TableHead>
                     <TableHead>EMI Amount</TableHead>
@@ -121,6 +122,7 @@ function EmployeeLoanPage() {
                 <TableBody>
                   {loansByEmployee?.map((loan) => (
                     <TableRow key={loan._id}>
+                      <TableCell>{new Date(loan.createdAt).toLocaleDateString()}</TableCell>
                       <TableCell>R {loan.loanAmount}</TableCell>
                       <TableCell>{loan.repaymentType}</TableCell>
                       <TableCell>{loan.emiAmount || "—"}</TableCell>
